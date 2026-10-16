@@ -57,7 +57,7 @@ for (const { slug, name } of DISPLAY) {
   const { viewBox, inner } = toSymbol(slug, readFileSync(file, 'utf8'))
   symbols.push(`    <symbol id="lg-${slug}" viewBox="${viewBox}">${inner}</symbol>`)
   cells.push(
-    `        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-${slug}"></use></svg><span>${name}</span></div>`
+    `        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-${slug}"></use></svg><span>${name}</span></div>`
   )
 }
 
@@ -70,8 +70,12 @@ const block = [
   '        <div class="marquee-track">',
   '          <!-- 第一遍：对读屏可见，模型名就在各自标记下方 -->',
   ...cells,
-  '          <!-- 第二遍：只为让滚动无缝，对读屏隐藏 -->',
-  ...cells.map((line) => line.replace('<div class="model-cell">', '<div class="model-cell" aria-hidden="true">')),
+  '          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免把 3D 倾斜覆盖掉 -->',
+  ...cells.map((line) =>
+    line
+      .replace('<div class="model-cell"', '<div class="model-cell" aria-hidden="true"')
+      .replace(' data-anim', '')
+  ),
   '        </div>',
   '      </div>',
   '      <!-- LOGOS:END -->',

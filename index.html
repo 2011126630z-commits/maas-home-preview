@@ -18,7 +18,7 @@
   所有图形都用 CSS / Canvas 画，不引外链、不放视频文件。
 
   品牌配置区：站名 3 处（<title>、顶栏字标、页脚大字）；
-  主色在 :root 的 --accent，首屏大图的色点在 .facet 的 background 里。
+  主色在 :root 的 --accent；首屏是画出来的旋转地球，没有背景色块。
 
   合规（勿删）：页脚保留 AGPLv3 第 7 条要求的署名句子与原项目可见链接。
   ============================================================================
@@ -176,19 +176,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: absolute; inset: 0 -16vw 0 0;
   border-radius: var(--r-card); overflow: hidden;
 }
-/* 首屏那张大图就是本页的视觉主体（对齐客户给的参考站）：一块斜置的多色雾面，不是装饰性色块 */
-.facet {
-  position: absolute; inset: 6% 4%;
-  transform: rotate(-13deg) scale(1.04);
-  border-radius: var(--r-card);
-  background: radial-gradient(62% 62% at 16% 20%, #ffb7d2 0%, rgba(255, 183, 210, 0) 66%), radial-gradient(56% 56% at 84% 10%, #ffd88a 0%, rgba(255, 216, 138, 0) 64%), radial-gradient(66% 66% at 80% 88%, #9fe3c8 0%, rgba(159, 227, 200, 0) 68%), radial-gradient(60% 60% at 10% 86%, #b9cbff 0%, rgba(185, 203, 255, 0) 68%), linear-gradient(142deg, #fff8fc 0%, #f5f7ff 100%); /* taste-skill-ignore 这张大图就是本页的主体视觉，渐变是内容不是装饰 */
-  animation: facet-drift 26s ease-in-out infinite;
-}
-/* 旋转的地球：画在粉彩底之上，点位来自内联的陆地掩码，不挂任何贴图 */
+/* 旋转的地球：本页首屏的视觉主体，点位来自内联陆地掩码，不挂任何贴图、不用背景色块 */
 #globe { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-@keyframes facet-drift {
-  50% { transform: rotate(-9deg) scale(1.05); }
-}
 
 .glass {
   position: absolute; left: clamp(14px, 3vw, 26px);
@@ -264,11 +253,23 @@ ul { margin: 0; padding: 0; list-style: none; }
 .model-cell:hover svg { opacity: 1; }
 .model-cell span { font-size: var(--t-small); color: var(--muted); white-space: nowrap; }
 
+/* 卡片自带 3D transform，所以入场要把倾斜一起写全，
+   不能套用通用的 [data-anim]（那条会把 rotate 覆盖成 none，立体感就没了） */
+.js .model-cell[data-anim] {
+  opacity: 0;
+  transform: rotateX(16deg) rotateY(-23deg) translateY(26px);
+}
+.js .model-cell[data-anim].is-in {
+  opacity: 1;
+  transform: rotateX(16deg) rotateY(-23deg);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .marquee { mask-image: none; perspective: none; }
   .marquee-track { animation: none; width: auto; flex-wrap: wrap; justify-content: center; row-gap: 24px; }
   .model-cell { transform: none; }
   .model-cell:hover { transform: none; }
+  .js .model-cell[data-anim] { opacity: 1; transform: none; transition: none; }
 }
 
 /* ---------- 能力：一条一个，标题与说明左右分栏 ---------- */
@@ -343,7 +344,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 .js [data-anim].is-in { opacity: 1; transform: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  .facet { animation: none; }
   .js [data-anim] { opacity: 1; transform: none; transition: none; }
   .btn:hover { transform: none; }
   #petals { display: none; }
@@ -434,7 +434,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 
       <div class="hero-art" data-anim>
         <div class="art-frame" aria-hidden="true">
-          <div class="facet"></div>
           <canvas id="globe"></canvas>
         </div>
 
@@ -472,19 +471,19 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="marquee">
         <div class="marquee-track">
           <!-- 第一遍：对读屏可见，模型名就在各自标记下方 -->
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div>
-        <div class="model-cell"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div>
-          <!-- 第二遍：只为让滚动无缝，对读屏隐藏 -->
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div>
+        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div>
+          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免把 3D 倾斜覆盖掉 -->
         <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div>
         <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div>
         <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div>
