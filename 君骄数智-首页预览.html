@@ -100,6 +100,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   pointer-events: none; z-index: 3;
 }
 
+/* ---------- 每页进场用的全屏粒子层（固定定位，不吃点击） ---------- */
+#burst {
+  position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none;
+  /* 放在当前页内部、内容之下（z-index 1，正文在 4 以上）：
+     粒子从文字后面迸出来，永远不会盖住正文，也不会跨页覆盖 */
+  z-index: 0; display: none;
+}
+#burst.is-live { display: block; }
+
 /* ---------- 顶栏：滚动后变成玻璃胶囊 ---------- */
 .masthead { position: sticky; top: 0; z-index: 60; padding-block: 8px; }
 .masthead-inner {
@@ -307,7 +316,10 @@ ul { margin: 0; padding: 0; list-style: none; }
    用 scroll-snap 做「整屏吸附」：鼠标滚一下、手指滑一下，都是整页跳，
    不需要手动拖到一半；点画面任意处也能往下翻一页。 */
 html { scroll-snap-type: y mandatory; }
-[data-slide] { scroll-snap-align: start; scroll-snap-stop: always; }
+[data-slide] { position: relative; scroll-snap-align: start; scroll-snap-stop: always; }
+/* 粒子画布是定位元素，会盖过静态排版的正文；把每页的内容显式抬到它上面
+   （正文 z-index 2、画布 0，粒子只从文字后面透出来） */
+[data-slide] > *:not(#burst) { position: relative; z-index: 2; }
 .slide-full { min-height: 100dvh; display: grid; grid-template-columns: minmax(0, 1fr); align-content: center; }
 .slide-full > .wrap { width: 100%; }
 /* 右下角的页码指示 */
@@ -744,6 +756,7 @@ html { scroll-snap-type: y mandatory; }
 
   <section class="hero slide-full" data-slide="0">
     <canvas id="petals" aria-hidden="true"></canvas>
+    <canvas id="burst" aria-hidden="true"></canvas>
     <!-- 角落等宽字标注：纯装饰的「仪表感」（借参考站的技术调性，不搬它的配色） -->
     <div class="hero-meta" aria-hidden="true">
       <span class="hero-meta-tl">JUNJIAO · MAAS</span>
@@ -985,7 +998,7 @@ html { scroll-snap-type: y mandatory; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 02:15</span>
+      <span class="foot-stamp">预览版 2026-10-17 02:26</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -1065,6 +1078,94 @@ document.documentElement.classList.add('js');
     deckGo(deckIndex + 1, true);
   });
 
+  /* ---------- 每页进场：该页元素锚点迸发粒子，元素本体同时位移淡入 ---------- */
+  var burstCv = document.getElementById('burst');
+  var bctx = burstCv ? burstCv.getContext('2d') : null;
+  var bParts = [], bRaf = null, bLast = 0, bW = 0, bH = 0;
+  var BURST_MAX = 900;
+  var BURST_COLORS = ['#5b82ff', '#2ad4c8', '#ff8f6b', '#edf0f6'];
+
+  var burstHost = null;
+  function burstResize(host) {
+    if (!bctx) return;
+    if (host && burstCv.parentElement !== host) host.appendChild(burstCv);
+    burstHost = host || burstCv.parentElement || null;
+    var r = burstHost ? burstHost.getBoundingClientRect() : { width: 0, height: 0 };
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    bW = r.width || window.innerWidth;
+    bH = r.height || window.innerHeight;
+    burstCv.width = Math.round(bW * dpr);
+    burstCv.height = Math.round(bH * dpr);
+    bctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  function burstSpawn(x, y, n, power) {
+    if (!bctx) return;
+    for (var i = 0; i < n && bParts.length < BURST_MAX * 7; i++) {
+      var a = Math.random() * Math.PI * 2;
+      var sp = (60 + Math.random() * 150) * power;
+      bParts.push(
+        x, y,
+        Math.cos(a) * sp, Math.sin(a) * sp - 26,
+        1, 1.4 + Math.random() * 1.5,
+        BURST_COLORS[(Math.random() * BURST_COLORS.length) | 0],
+        1 + Math.random() * 1.7
+      );
+    }
+  }
+
+  function burstFrame(now) {
+    if (!bctx) return;
+    var dt = bLast ? Math.min((now - bLast) / 1000, 0.05) : 0;
+    bLast = now;
+    bctx.clearRect(0, 0, bW, bH);
+    var alive = [];
+    for (var i = 0; i < bParts.length; i += 8) {
+      var life = bParts[i + 4] - dt / bParts[i + 5];
+      if (life <= 0) continue;
+      var x = bParts[i] + bParts[i + 2] * dt;
+      var y = bParts[i + 3] * dt + bParts[i + 1];
+      var vy = bParts[i + 3] + 190 * dt;
+      var alpha = life * life;
+      bctx.globalAlpha = alpha;
+      bctx.fillStyle = bParts[i + 6];
+      bctx.beginPath();
+      bctx.arc(x, y, bParts[i + 7] * (0.4 + life * 0.6), 0, 6.2832);
+      bctx.fill();
+      alive.push(x, y, bParts[i + 2] * 0.985, vy, life, bParts[i + 5], bParts[i + 6], bParts[i + 7]);
+    }
+    bctx.globalAlpha = 1;
+    bParts = alive;
+    if (bParts.length) bRaf = requestAnimationFrame(burstFrame);
+    else { bRaf = null; bctx.clearRect(0, 0, bW, bH); burstCv.classList.remove('is-live'); }
+  }
+
+  function burstFor(slide) {
+    if (!bctx || STATIC || REDUCED) return;
+    burstResize(slide);
+    var host = burstCv.parentElement.getBoundingClientRect();
+    var items = [].slice.call(slide.querySelectorAll('[data-anim]')).slice(0, 14);
+    var n = 0;
+    for (var i = 0; i < items.length; i++) {
+      var r = items[i].getBoundingClientRect();
+      if (r.bottom < 0 || r.top > window.innerHeight || r.width < 4) continue;
+      var count = Math.max(10, Math.min(46, Math.round(r.width / 14)));
+      /* 坐标换算成「相对当前页」，再从左缘与下缘迸发，像内容是由粒子聚出来的 */
+      var x = r.left - host.left;
+      var y = r.top - host.top;
+      burstSpawn(x + 6, y + r.height * 0.5, count, 0.85);
+      burstSpawn(x + r.width * 0.5, y + r.height - 4, Math.round(count * 0.6), 0.6);
+      n += count;
+    }
+    if (n && !bRaf) {
+      burstCv.classList.add('is-live');
+      bLast = 0;
+      bRaf = requestAnimationFrame(burstFrame);
+    }
+  }
+
+  window.addEventListener('resize', function () { burstResize(burstHost); }, { passive: true });
+
   /* 滚动位置反推当前页（手机上手指滑也是整屏吸附） */
   if (window.IntersectionObserver) {
     var spy = new IntersectionObserver(function (entries) {
@@ -1074,10 +1175,13 @@ document.documentElement.classList.add('js');
         if (i === deckIndex) return;
         deckIndex = i;
         deckDots.forEach(function (b, k) { b.setAttribute('aria-current', String(k === i)); });
+        burstFor(en.target);   /* 每页进来时该页元素迸发粒子 */
       });
     }, { threshold: 0.55 });
     deck.forEach(function (el) { spy.observe(el); });
   }
+  burstResize(deck[0]);
+  if (deck[0]) setTimeout(function () { burstFor(deck[0]); }, 260);
 
   /* ---------- 手机菜单：开合都要有过渡 ---------- */
   var menuEl = document.querySelector('.menu');
