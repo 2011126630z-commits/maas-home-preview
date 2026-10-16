@@ -324,63 +324,68 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: var(--fill); }
 
-/* ---------- 整页常驻的品牌色体 ----------
-   参考站的效果是「一大块柔和、有机、多色的渐变体，缓慢变形并随滚动移动」，
-   不是把 logo 原样印上去。这里用品牌色做同样的效果：
-   青 → 亮蓝 → 深蓝 → 一点紫，边缘靠 border-radius 的有机形态 + 轻微模糊柔化。 */
-/* z-index:-1 把色体压到所有在流内容之下 —— 绝不能改顶层元素的 position，
+/* ---------- 整页常驻的品牌图形：元素取自品牌图标本身 ----------
+   青 → 深蓝的渐变 + 粗圆角笔画，做成两条交叉的笔画。
+   这是客户选定的形态（圆球、多边形色体都已被否掉，别再改回去）。
+   固定铺满视口、压在正文之下，滚动时一直可见。 */
+/* z-index:-1 把图形压到所有在流内容之下 —— 绝不能改顶层元素的 position，
    顶栏是 position:sticky，被改成 relative 就不吸顶了（踩过） */
-.brand-shape { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .55; filter: saturate(1.1); }
+.brand-shape { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .62; filter: saturate(1.12); }
 
-.bs-blob {
-  position: absolute;
-  left: 58%; top: 16%;
-  width: min(36%, 500px); aspect-ratio: 1 / 1.06;
-  /* 客户反馈"为啥是一个球"：圆角接近 50% 再叠径向高光，就成了打了光的球。
-     参考站那块是**有棱角的多边形**，所以改用 clip-path 定轮廓。
-     两组关键帧点数一致（各 8 点），clip-path 才能平滑插值。 */
-  clip-path: polygon(11% 8%, 62% 0%, 97% 27%, 100% 68%, 71% 98%, 29% 100%, 3% 73%, 0% 32%);
-  background:
-    radial-gradient(120% 95% at 10% 6%, rgba(111, 220, 255, .95) 0%, rgba(111, 220, 255, 0) 58%), /* taste-skill-ignore 品牌色体的多层渐变，参考站那种多色块效果 */
-    radial-gradient(115% 100% at 94% 22%, rgba(34, 167, 232, .85) 0%, rgba(34, 167, 232, 0) 60%), /* taste-skill-ignore 同上 */
-    radial-gradient(130% 115% at 80% 98%, rgba(29, 111, 214, .95) 0%, rgba(29, 111, 214, 0) 62%), /* taste-skill-ignore 同上 */
-    radial-gradient(90% 80% at 24% 86%, rgba(124, 92, 255, .45) 0%, rgba(124, 92, 255, 0) 66%), /* taste-skill-ignore 同上，角落里的一点紫做纵深 */
-    linear-gradient(140deg, #5ed3ff 0%, #1a7fdd 46%, #0d2f66 100%); /* taste-skill-ignore 同上，底色（压深一档，避免发白） */
-  filter: blur(9px) saturate(1.25); /* taste-skill-ignore 参考站那种边缘很柔、颜色很饱和的色块 */
-  animation: blob-morph 19s ease-in-out infinite, blob-drift 27s ease-in-out infinite;
+.bs-bar {
+  position: absolute; display: block;
+  height: clamp(50px, 6.2vw, 90px);
+  border-radius: 999px;
 }
-/* 缓慢改变轮廓：始终是 8 点的角状形，不做成圆 */
-@keyframes blob-morph {
-  0%, 100% { clip-path: polygon(11% 8%, 62% 0%, 97% 27%, 100% 68%, 71% 98%, 29% 100%, 3% 73%, 0% 32%); }
-  50%      { clip-path: polygon(6% 20%, 44% 2%, 92% 10%, 100% 55%, 84% 92%, 40% 100%, 8% 88%, 0% 52%); }
+/* 主笔画：青 → 品牌蓝 → 深蓝，就是图标自身的梯度 */
+.bs-bar-a {
+  left: 54%; top: 26%; width: min(27%, 400px);
+  transform: rotate(-19deg);
+  animation: bs-drift-a 9s ease-in-out infinite;
+  background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* taste-skill-ignore 取自品牌图标自身的渐变，客户指定的形态 */
+  box-shadow: 0 26px 60px -34px rgba(18, 58, 134, .6); /* taste-skill-ignore 同一图形的柔和投影 */
 }
-@keyframes blob-drift {
-  0%, 100% { transform: rotate(-9deg) scale(1); }
-  50%      { transform: rotate(-2deg) scale(1.05); }
+/* 副笔画：与主笔画交叉，呼应图标里那两笔的结构 */
+.bs-bar-b {
+  left: 62%; top: 52%; width: min(23%, 340px);
+  transform: rotate(23deg);
+  animation: bs-drift-b 12s ease-in-out infinite;
+  background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* taste-skill-ignore 同上，同一套品牌梯度 */
+  opacity: .85;
 }
+/* 一层气晕，让图形有体积而不是两条色带 */
 .bs-glow {
-  position: absolute; left: 54%; top: 10%; width: min(44%, 640px); aspect-ratio: 1;
+  position: absolute; left: 52%; top: 16%; width: min(30%, 430px); aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 46% 44%, rgba(34, 167, 232, .24) 0%, rgba(34, 167, 232, .07) 48%, rgba(34, 167, 232, 0) 74%); /* taste-skill-ignore 同上，色体外围的气晕 */
+  background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .2) 0%, rgba(34, 167, 232, .06) 46%, rgba(34, 167, 232, 0) 72%); /* taste-skill-ignore 图形外围的气晕 */
   animation: bs-pulse 13s ease-in-out infinite;
+}
+@keyframes bs-drift-a {
+  0%, 100% { transform: rotate(-19deg) translate3d(0, 0, 0); }
+  50%      { transform: rotate(-5deg) translate3d(120px, -90px, 0); }
+}
+@keyframes bs-drift-b {
+  0%, 100% { transform: rotate(23deg) translate3d(0, 0, 0); }
+  50%      { transform: rotate(38deg) translate3d(-100px, 78px, 0); }
 }
 @keyframes bs-pulse {
   0%, 100% { opacity: .8; transform: scale(1); }
   50%      { opacity: 1;  transform: scale(1.1); }
 }
 @media (max-width: 1040px) {
-  .bs-blob { left: 40%; top: 6%; width: 70%; }
-  .bs-glow { left: 26%; top: 2%; width: 86%; }
+  .bs-bar-a { left: 50%; top: 28%; width: 31%; }
+  .bs-bar-b { left: 58%; top: 54%; width: 27%; }
+  .bs-glow { left: 46%; top: 18%; width: 42%; }
 }
 @media (max-width: 720px) {
-  /* 手机上正文与色体在同一竖列，必然重叠 —— 所以不是挪位置，
-     而是把它压成很淡的氛围层，保证文字始终清晰可读 */
+  /* 手机上正文与图形在同一竖列，必然重叠 —— 压成很淡的氛围层，保证文字清晰可读 */
   .brand-shape { opacity: .3; }
-  .bs-blob { left: 30%; top: 8%; width: 78%; }
-  .bs-glow { left: 14%; top: 3%; width: 92%; }
+  .bs-bar-a { left: 20%; top: 30%; width: 66%; }
+  .bs-bar-b { left: 32%; top: 54%; width: 58%; }
+  .bs-glow { left: 10%; top: 22%; width: 80%; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .bs-blob, .bs-glow { animation: none; }
+  .bs-bar-a, .bs-bar-b, .bs-glow { animation: none; }
 }
 
 /* ---------- 首屏 ---------- */
@@ -786,7 +791,8 @@ ul { margin: 0; padding: 0; list-style: none; }
      固定铺满视口、压在正文之下，滚动时缓慢位移旋转 —— 参考站那种"滑过也还在"的效果。 -->
 <div class="brand-shape" aria-hidden="true">
   <span class="bs-glow"></span>
-  <span class="bs-blob"></span>
+  <span class="bs-bar bs-bar-a"></span>
+  <span class="bs-bar bs-bar-b"></span>
 </div>
 
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -1108,7 +1114,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 04:49</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:52</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
