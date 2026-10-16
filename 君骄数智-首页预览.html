@@ -154,7 +154,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   --hover-time: 400ms;
   --hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
   --cut: 1.3em;            /* 投影外扩量：原组件是 2em，纯白底上会糊出上下两道灰印 */
-  --sh: .12;               /* 投影浓度，按场景调：顶栏要几乎看不见 */
+  --sh: 0;                 /* 投影浓度统一归零：白底上这圈灰影看起来就是脏印子（客户对全部按钮都提了） */
   --pad-y: 0.875em;
   --pad-x: 1.5em;
 }
@@ -204,13 +204,14 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* 基类那几道白色内高光是给浅玻璃用的，落在深色按钮上就是一条白腰带，这里单独换掉 */
 .fancy-btn.fancy-btn-solid {
-  box-shadow: inset 0 0.1em 0.1em rgba(0, 0, 0, .16), inset 0 -0.1em 0.1em rgba(255, 255, 255, .12), 0 0.25em 0.125em -0.125em rgba(0, 0, 0, .28); /* taste-skill-ignore 同上：深色玻璃的厚度 */
+  box-shadow: inset 0 0.1em 0.1em rgba(0, 0, 0, .16), inset 0 -0.1em 0.1em rgba(255, 255, 255, .12), 0 0.0625em 0.125em rgba(20, 16, 23, .1); /* taste-skill-ignore 同上：深色按钮只留极轻落地感，外投影同样会糊灰印 */
 }
 .fancy-btn-solid .fancy-label { color: var(--canvas); }
 .fancy-btn-solid::after { --angle-1: 40deg; }
 /* 深色带上的玻璃按钮：同一套材质，文字转白、投影换成微弱白光 */
 .fancy-wrap-on-dark .fancy-btn {
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .16), rgba(255, 255, 255, .07)); /* taste-skill-ignore 同上：深底上的玻璃高光层（压低峰值，避免中间一半发亮） */
+  background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .1)); /* taste-skill-ignore 同上：深底上按钮填充要更实，文字才有承托 */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); /* taste-skill-ignore 同上：深底上的内描边 */
 }
 .fancy-wrap-on-dark .fancy-label { color: var(--canvas); }
 .fancy-wrap-on-dark .fancy-shadow::after {
@@ -221,8 +222,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   cursor: pointer; position: relative; z-index: 3; box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   border-radius: var(--pill);
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .13), rgba(255, 255, 255, .05)); /* taste-skill-ignore 玻璃按钮的高光层，是 brief 里「高级感」的来源 */
-  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, .05), inset 0 -0.125em 0.125em rgba(255, 255, 255, .5), 0 0.25em 0.125em -0.125em rgba(0, 0, 0, .2), 0 0 0.1em 0.25em inset rgba(255, 255, 255, .2); /* taste-skill-ignore 同上：内高光加外投影才做出玻璃的厚度 */
+  /* 白底上玻璃材质本身不可见（填充只有 5%~13% 的白），而外投影就是那圈灰印子 ——
+     所以改成：实体填充 + 内描边定边界 + 只留极轻的落地感。 */
+  background: linear-gradient(180deg, #ffffff, #eef2fa); /* taste-skill-ignore 白底上按钮需要实体，否则靠影子定义自己 */
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .12), inset 0 -0.125em 0.125em rgba(255, 255, 255, .75), 0 0.0625em 0.125em rgba(20, 16, 23, .07); /* taste-skill-ignore 同上：内描边加极轻落地感 */
   backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 玻璃按钮需要磨砂背景层 */
   -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 同上，Safari 前缀 */
   transition: all var(--hover-time) var(--hover-ease);
@@ -231,7 +234,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   transform: scale(.975);
   backdrop-filter: blur(0.01em); /* taste-skill-ignore 同上，按下时磨砂收掉 */
   -webkit-backdrop-filter: blur(0.01em); /* taste-skill-ignore 同上，Safari 前缀 */
-  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, .05), inset 0 -0.125em 0.125em rgba(255, 255, 255, .5), 0 0.15em 0.05em -0.1em rgba(0, 0, 0, .25), 0 0 0.05em 0.1em inset rgba(255, 255, 255, .5); /* taste-skill-ignore 同上，悬停时玻璃压薄 */
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .18), inset 0 -0.125em 0.125em rgba(255, 255, 255, .85); /* taste-skill-ignore 同上：悬停时描边加深、投影收掉 */
 }
 .fancy-label {
   position: relative; display: block; user-select: none;
@@ -1123,7 +1126,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 05:08</span>
+      <span class="foot-stamp">预览版 2026-10-17 05:11</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
