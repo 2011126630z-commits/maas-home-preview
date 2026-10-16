@@ -144,6 +144,31 @@ npm run shots        # 出图（本机 Edge 无头模式，免安装）
 
 换了配色或版面后可重跑第 2 步再生成掩码；换更细的地理数据只需要替换第 1 步的数据源。
 
+## 玻璃拟态按钮（第三方组件，MIT）
+
+首屏「查看定价」用的是 Uiverse 的玻璃按钮：
+[odd-ladybug-31 by FColombati](https://uiverse.io/FColombati/odd-ladybug-31)，MIT License © 2023 Uiverse.io。
+许可证原文与出处写在 `index.html` **文件末尾的注释**里，**不可删**（MIT 要求保留版权声明）。
+
+接入时做了三处改动：
+
+1. 去掉原组件写死的整页 `.body` 背景与布局（它是独立 demo，直接搬会把整页刷成灰色）
+2. 尺寸不再由 `font-size: clamp(2rem, 3em, 5rem)` 驱动 —— 那会打破本站「字号只有五档」的约束，
+   改为沿用父级字号（`.fancy-wrap` 用 `--t-lead`，标签 `font-size: inherit`）
+3. **补上原组件缺失的 `@property` 注册**：没有它 `--angle-1/--angle-2` 不会过渡，
+   那圈旋转描边就是死的（原文里 `transition: --angle-1` 是空转）
+
+同时**去掉原组件的 `text-shadow` 浮雕字效**：浅色玻璃上它伤文字可读性，taste-skill 的
+inspect 也会因此判 FAIL。玻璃分层、扫光、按下 3D 下沉都保留。
+
+`npm run button` 用 CDP 派发真实鼠标事件验证（CSS `:hover/:active` 无法用合成事件触发）：
+
+```
+静息  btn=none        描边角=0deg     扫光=0% 50%
+悬停  btn=matrix(0.975, …)  描边角=-125deg  扫光=25% 50%
+按下  wrap=matrix3d(…0.906, 0.4226…)  ← rotate3d(1,0,0,25deg) 压下去
+```
+
 ## 手机端（两个容易踩的坑，都修过）
 
 - **首屏太矮**：手机上首屏原来只有 0.77 屏、地球只有 340px 高，一滑就整屏划过去了。

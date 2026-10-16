@@ -50,11 +50,16 @@ function scriptBlock(html) {
  * src/href/@import 等真正的加载面仍然照查。
  */
 function withoutCodeSamples(html) {
+  // 顺序有讲究：先把 base64 载荷中和掉，再处理注释——
+  // 否则"去注释"的正则会先吃掉 /* LAND:BEGIN */ 标记，掩码里的 // 就会被误判成外链。
   return html
     .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, '<pre></pre>')
     .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, '<code></code>')
-    .replace(/\/\* LAND:BEGIN \*\/[\s\S]*?\/\* LAND:END \*\//g, '/* LAND */')
     .replace(/data:[a-z0-9.+-]+\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\s]+/gi, 'data:inline')
+    .replace(/\/\* LAND:BEGIN \*\/[\s\S]*?\/\* LAND:END \*\//g, '/* LAND */')
+    // 注释里的 URL 不会发起请求（许可证原文、组件出处都写在注释里），一并排除
+    .replace(/<!--[\s\S]*?-->/g, '<!-- -->')
+    .replace(/\/\*[\s\S]*?\*\//g, '/* */')
 }
 
 function collectExternalUrls(html) {
@@ -304,7 +309,15 @@ test('不编造业务指标，也不留未标注的示例数值', () => {
   )
   // 这一版没有任何统计数字，所以也不需要「演示数据」标注；
   // 一旦引入示例数值，就必须就地标注，否则下面这条会失败。
-  const sampleNumbers = [...raw.matchAll(/\d[\d,]*\s*(万|亿|ms|毫秒)\b/g)]
+  //
+  // 只看**用户可见的文本**：CSS 里的 400ms 是过渡时长、不是业务指标，
+  // 早期版本直接在全文里匹配，把过渡时长也当成了示例数值（误报）。
+  const visibleText = raw
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<!--[\s\S]*?-->/g, ' ')
+    .replace(/<[^>]+>/g, ' ')
+  const sampleNumbers = [...visibleText.matchAll(/\d[\d,]*\s*(万|亿|ms|毫秒)\b/g)]
   if (sampleNumbers.length > 0) {
     assert.match(raw, /演示数据/, '出现示例数值时必须就地标注「演示数据」')
   }
