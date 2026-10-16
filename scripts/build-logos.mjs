@@ -48,14 +48,26 @@ function toSymbol(slug, raw) {
 
 const symbols = []
 const cells = []
+let colored = 0
 for (const { slug, name } of DISPLAY) {
-  const file = join(logoDir, `${slug}.svg`)
+  // 优先用官方彩色版；OpenAI / Kimi 这类本身就是单色品牌没有彩色版，用单色即可
+  const colorFile = join(logoDir, `${slug}-color.svg`)
+  const monoFile = join(logoDir, `${slug}.svg`)
+  const file = existsSync(colorFile) ? colorFile : monoFile
   if (!existsSync(file)) {
-    console.warn(`跳过 ${slug}：assets/logos/${slug}.svg 不存在`)
+    console.warn(`跳过 ${slug}：assets/logos 里没有对应 svg`)
     continue
   }
+  if (file === colorFile) colored++
   const { viewBox, inner } = toSymbol(slug, readFileSync(file, 'utf8'))
-  symbols.push(`    <symbol id="lg-${slug}" viewBox="${viewBox}">${inner}</symbol>`)
+  // Claude 官方 logo 的暖陶色会被 lint 当成"AI 助手配色"，这里说明它是品牌资产而不是页面配色
+  const needsIgnore = /#d97757|#f0eee6/i.test(inner)
+  symbols.push(
+    `    <symbol id="lg-${slug}" viewBox="${viewBox}">${inner}</symbol>` +
+      (needsIgnore
+        ? '<!-- taste-skill-ignore 这是 Claude 官方 logo 的品牌色，不是页面的配色选择 -->'
+        : '')
+  )
   cells.push(
     `        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-${slug}"></use></svg><span>${name}</span></div>`
   )
@@ -90,5 +102,5 @@ if (start === -1 || end === -1) throw new Error('index.html 里找不到 LOGOS �
 const next = html.slice(0, start) + block.slice('      '.length) + html.slice(end + '<!-- LOGOS:END -->'.length)
 writeFileSync(indexPath, next, 'utf8')
 
-console.log(`已写入 ${symbols.length} 个模型标记，滚动两遍，共 ${cells.length * 2} 个单元格`)
+console.log(`已写入 ${symbols.length} 个模型标记（其中 ${colored} 个用官方彩色版），滚动两遍，共 ${cells.length * 2} 个单元格`)
 console.log('列表：' + DISPLAY.map((d) => d.name).join(' · '))
