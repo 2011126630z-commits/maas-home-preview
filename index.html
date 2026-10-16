@@ -193,6 +193,18 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* 旋转的地球：本页首屏的视觉主体，点位来自内联陆地掩码，不挂任何贴图、不用背景色块 */
 #globe { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+/* 地球可以点：点一下粒子从点击处炸开再被吸回去 */
+.art-frame { cursor: pointer; }
+.globe-hint {
+  position: absolute; left: 50%; top: clamp(4px, 0.8vw, 14px); transform: translateX(-50%);
+  margin: 0; font-size: var(--t-small); color: var(--muted); letter-spacing: .01em;
+  pointer-events: none; opacity: .55; transition: opacity .35s ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .globe-hint { opacity: 0; }
+  .art-frame:hover .globe-hint { opacity: .7; }
+}
+.art-frame.is-touched .globe-hint { opacity: 0; }
 
 .glass {
   position: absolute; left: clamp(14px, 3vw, 26px);
@@ -467,6 +479,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="hero-art" data-anim>
         <div class="art-frame" aria-hidden="true">
           <canvas id="globe"></canvas>
+          <p class="globe-hint">点一下地球</p>
         </div>
 
         <div class="glass" data-ui>
@@ -583,7 +596,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 00:55</span>
+      <span class="foot-stamp">预览版 2026-10-17 01:03</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -740,6 +753,90 @@ document.documentElement.classList.add('js');
       gcoral = rootStyle.getPropertyValue('--brand-coral').trim() || gcoral;
     }
 
+    /* ---------- 爆炸回吸：点一下，粒子从点击处炸开，再被"引力"慢慢吸回球面 ---------- */
+    var explosionForce = 3.0;   /* 爆炸力度：初速，单位是球半径/秒 */
+    var attractionSpeed = 3.8;  /* 回吸速度：弹簧劲度，越小回得越慢越"飘" */
+    var dragCoef = 1.55;        /* 阻尼：越大越快停（小=弹，大=慢镜头） */
+    var cursorPull = 1.7;       /* 光标吸引力度：对齐参考项目的 Real-Time Cursor Attraction */
+    var blastRadiusK = 1.25;    /* 影响半径 = 球半径 × 这个系数 */
+    var PHYS_STEP = 1 / 60;     /* 固定物理步长：帧率再低也按真实时间推进 */
+
+    var pn = dots.length / 3;
+    var off = new Float32Array(pn * 3);   /* 相对球面的位移 */
+    var vel = new Float32Array(pn * 3);   /* 速度 */
+    var scr = new Float32Array(pn * 2);   /* 上一帧的屏幕位置，供炸点/光标算距离 */
+    var pactive = false;                  /* 还有粒子没归位时为 true */
+    var pointer = { x: 0, y: 0, active: false };
+
+    function gStep(h) {
+      var damp = Math.exp(-h * dragCoef);
+      var pull = pointer.active ? cursorPull : 0;
+      var pr = Math.min(gw, gh) * 0.38 * 1.05;   /* 光标影响半径 */
+      var settled = true;
+      for (var i = 0; i < pn; i++) {
+        var k = i * 3;
+        vel[k] += -off[k] * attractionSpeed * h;
+        vel[k + 1] += -off[k + 1] * attractionSpeed * h;
+        vel[k + 2] += -off[k + 2] * attractionSpeed * h;
+
+        if (pull) {
+          var dx = pointer.x - scr[i * 2];
+          var dy = pointer.y - scr[i * 2 + 1];
+          var d = Math.sqrt(dx * dx + dy * dy);
+          if (d < pr) {
+            var w = 1 - d / pr;                 /* 越近吸得越紧 */
+            var f = pull * w * w * h;
+            var inv = d > 0.5 ? 1 / d : 0;
+            vel[k] += dx * inv * f;
+            vel[k + 1] += -dy * inv * f;
+          }
+        }
+
+        vel[k] *= damp; vel[k + 1] *= damp; vel[k + 2] *= damp;
+        off[k] += vel[k] * h;
+        off[k + 1] += vel[k + 1] * h;
+        off[k + 2] += vel[k + 2] * h;
+
+        var far = off[k] * off[k] + off[k + 1] * off[k + 1] + off[k + 2] * off[k + 2];
+        var fast = vel[k] * vel[k] + vel[k + 1] * vel[k + 1] + vel[k + 2] * vel[k + 2];
+        if (far > 1e-6 || fast > 1e-6) settled = false;
+        else { off[k] = off[k + 1] = off[k + 2] = 0; vel[k] = vel[k + 1] = vel[k + 2] = 0; }
+      }
+      return settled;
+    }
+
+    function gPhysics(dt) {
+      if (!pactive && !pointer.active) return;
+      /* 固定步长子步进：帧间隔再大也按真实时间推进，不会"跑不满时间" */
+      var steps = Math.max(1, Math.min(16, Math.ceil(dt / PHYS_STEP)));
+      var h = dt / steps;
+      var settled = false;
+      for (var s = 0; s < steps; s++) settled = gStep(h);
+      pactive = !settled;
+    }
+
+    function gBlast(clickX, clickY) {
+      var cx = gw / 2, cy = gh * 0.44;
+      var radius = Math.min(gw, gh) * 0.38;
+      var R = radius * blastRadiusK;
+      for (var i = 0; i < pn; i++) {
+        var dx = scr[i * 2] - clickX;
+        var dy = scr[i * 2 + 1] - clickY;
+        var d = Math.sqrt(dx * dx + dy * dy);
+        if (d > R) continue;
+        var falloff = 1 - d / R;
+        var mag = explosionForce * falloff * falloff;   /* 越靠近炸点越猛 */
+        var nx = d > 0.5 ? dx / d : 0;
+        var ny = d > 0.5 ? dy / d : 1;
+        var k = i * 3;
+        /* 屏幕轴直接映射到旋转后的世界轴：px→X，py→−Y（世界 Y 朝上） */
+        vel[k] += nx * mag;
+        vel[k + 1] += -ny * mag;
+        vel[k + 2] += (Math.random() - 0.5) * mag * 0.7;  /* 掺一点纵深，免得像纯平面炸开 */
+      }
+      pactive = true;
+    }
+
     function gDraw() {
       gctx.clearRect(0, 0, gw, gh);
       var cx = gw / 2, cy = gh * 0.44;
@@ -747,13 +844,18 @@ document.documentElement.classList.add('js');
       var cosA = Math.cos(gspin), sinA = Math.sin(gspin);
       var buckets = [[], [], [], []];
       var i, x, y, z, X, Y, Z, ty, tz, depth, bucket;
+      var moving = off[0] !== 0 || off[1] !== 0 || off[2] !== 0 || pactive;
       for (i = 0; i < dots.length; i += 3) {
+        var pi = i / 3, pk = pi * 3;
         x = dots[i]; y = dots[i + 1]; z = dots[i + 2];
+        if (moving) { x += off[pk]; y += off[pk + 1]; z += off[pk + 2]; }
         X = x * cosA + z * sinA;
         Z = -x * sinA + z * cosA;
         Y = y;
         ty = Y * cosT - Z * sinT;
         tz = Y * sinT + Z * cosT;
+        scr[pi * 2] = cx + X * radius;
+        scr[pi * 2 + 1] = cy - ty * radius;
         if (tz <= 0.03) continue;
         depth = tz;
         bucket = depth > 0.8 ? 3 : depth > 0.55 ? 2 : depth > 0.28 ? 1 : 0;
@@ -778,6 +880,8 @@ document.documentElement.classList.add('js');
     }
 
     var globeReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    /* 调试开关：?freeze 冻结自转，用于在没有旋转干扰的情况下核对爆炸/回吸的物理 */
+    var gFreeze = window.location.search.indexOf('freeze') !== -1;
 
     function gStart() {
       if (graf || globeReduce || STATIC || !gvisible || document.hidden) return;
@@ -797,7 +901,8 @@ document.documentElement.classList.add('js');
       if (gacc < FRAME_MS) { graf = requestAnimationFrame(gFrame); return; }  /* 限到 30fps */
       var step = gacc / 1000;
       gacc = 0;
-      gspin = (gspin + step * 0.12) % TAU;
+      if (!gFreeze) gspin = (gspin + step * 0.12) % TAU;
+      gPhysics(step);
       gDraw();
       graf = requestAnimationFrame(gFrame);
     }
@@ -816,7 +921,44 @@ document.documentElement.classList.add('js');
       }
       document.title = 'DOTS=' + dots.length / 3 + ' 掩码陆地=' + landCells +
         ' 画布=' + Math.round(gw) + 'x' + Math.round(gh);
+      /* 调试接口：让测试可以确定性地推进物理并读回状态，不依赖 rAF */
+      window.__globeDebug = {
+        count: pn,
+        energy: function () {
+          var e = 0;
+          for (var i = 0; i < pn * 3; i++) e += off[i] * off[i];
+          return Math.sqrt(e / pn);            /* 均方位移，单位=球半径 */
+        },
+        peak: function () {
+          var m = 0;
+          for (var i = 0; i < pn * 3; i++) if (Math.abs(off[i]) > m) m = Math.abs(off[i]);
+          return m;
+        },
+        step: function (h, times) { for (var i = 0; i < times; i++) gStep(h); },
+        physics: function (dt) { gPhysics(dt); },
+        blast: function (x, y) { gBlast(x, y); },
+        spin: function () { return gspin; },
+        settled: function () { return !pactive; },
+      };
     }
+    /* 点一下就炸；移动指针则被吸引（对齐参考项目的 click=爆炸 / hover=吸引 / 触摸拖拽=吸引） */
+    var artFrame = document.querySelector('.art-frame');
+    if (artFrame && !globeReduce && !STATIC) {
+      artFrame.addEventListener('pointerdown', function (e) {
+        var rect = globe.getBoundingClientRect();
+        gBlast(e.clientX - rect.left, e.clientY - rect.top);
+        artFrame.classList.add('is-touched');
+      });
+      artFrame.addEventListener('pointermove', function (e) {
+        var rect = globe.getBoundingClientRect();
+        pointer.x = e.clientX - rect.left;
+        pointer.y = e.clientY - rect.top;
+        pointer.active = true;
+      });
+      artFrame.addEventListener('pointerleave', function () { pointer.active = false; });
+      artFrame.addEventListener('pointercancel', function () { pointer.active = false; });
+    }
+
     window.addEventListener('resize', function () { gResize(); gDraw(); }, { passive: true });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) gStop();

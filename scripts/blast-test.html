@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>BLAST-TEST</title>
+<style>html,body{margin:0;padding:0;background:#fff;overflow:hidden}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!--
+  爆炸效果验证：把页面放进 iframe，在第 delay 毫秒真正派发一次 pointerdown，
+  由外部 --virtual-time-budget 决定截图落在爆炸的哪一帧。
+  用法：blast-test.html?w=1440&h=1130&delay=600&src=<encoded url>
+-->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 1440);
+  var h = Number(q.get('h') || 1130);
+  var delay = Number(q.get('delay') || 600);
+  var src = q.get('src') || '';
+  var frame = document.getElementById('frame');
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.src = src;
+
+  setTimeout(function () {
+    try {
+      var doc = frame.contentWindow.document;
+      var art = doc.querySelector('.art-frame');
+      var canvas = doc.getElementById('globe');
+      var r = canvas.getBoundingClientRect();
+      // 炸点取球面偏左上，方便看清单边飞散
+      var x = r.left + r.width * 0.52;
+      var y = r.top + r.height * 0.30;
+      var ev = new frame.contentWindow.PointerEvent('pointerdown', {
+        bubbles: true, cancelable: true, clientX: x, clientY: y, pointerType: 'mouse',
+      });
+      art.dispatchEvent(ev);
+      var hint = doc.querySelector('.globe-hint');
+      document.title = 'BLAST-TEST=已派发 pointerdown 于 ' + Math.round(x) + ',' + Math.round(y) +
+        ' | 提示语已隐藏=' + (art.classList.contains('is-touched')) +
+        ' | hint存在=' + !!hint;
+    } catch (error) {
+      document.title = 'BLAST-TEST=失败 ' + error.name + ':' + error.message;
+    }
+  }, delay);
+})();
+</script>
+</body>
+</html>

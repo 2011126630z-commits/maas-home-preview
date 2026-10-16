@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>PHYS=PENDING</title>
+<style>html,body{margin:0;padding:0}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!--
+  物理确定性验证：不依赖 rAF，直接用页面导出的 __globeDebug 推进物理并读回位移。
+  用法：phys-test.html?src=<encoded url with ?debug=globe>
+-->
+<iframe id="frame" scrolling="no" width="1200" height="900"></iframe>
+<script>
+(function () {
+  'use strict';
+  var src = new URLSearchParams(location.search).get('src') || '';
+  var frame = document.getElementById('frame');
+  frame.src = src;
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      function report() { document.title = 'PHYS=' + out.join(' | '); }
+      try {
+        var d = frame.contentWindow.__globeDebug;
+        if (!d) { document.title = 'PHYS=没有 __globeDebug（debug=globe 没生效）'; return; }
+
+        out.push('粒子数=' + d.count);
+        out.push('t0_位移=' + d.energy().toFixed(5));
+
+        // 在球心偏上位置炸一次
+        var canvas = frame.contentWindow.document.getElementById('globe');
+        var r = canvas.getBoundingClientRect();
+        d.blast(r.width * 0.5, r.height * 0.35);
+        out.push('炸后_位移=' + d.energy().toFixed(5));
+        out.push('炸后_峰值=' + d.peak().toFixed(4));
+
+        // 以固定步长推进，看位移怎么衰减
+        var marks = [0.25, 0.5, 1, 2, 3, 4, 6, 8];
+        var done = 0;
+        for (var i = 0; i < marks.length; i++) {
+          var need = Math.round(marks[i] * 60) - done;
+          d.step(1 / 60, need);
+          done += need;
+          out.push(marks[i] + 's_位移=' + d.energy().toFixed(5));
+        }
+        out.push('已稳定=' + d.settled());
+      } catch (error) {
+        out.push('ERR=' + error.name + ':' + error.message);
+      }
+      report();
+    }, 1500);
+  });
+})();
+</script>
+</body>
+</html>

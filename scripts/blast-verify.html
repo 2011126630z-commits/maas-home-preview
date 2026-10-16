@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>BLAST-VERIFY=PENDING</title>
+<style>html,body{margin:0;padding:0;background:#fff}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!--
+  爆炸回吸验证：读 canvas 像素，量炸点周围一圈的粒子数随时间的变化。
+  炸开 → 该圈粒子飞走、数量骤降；回吸 → 数量回升。
+  用法：blast-verify.html?w=1440&h=1130&src=<encoded url>
+-->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 1440);
+  var h = Number(q.get('h') || 1130);
+  var src = q.get('src') || '';
+  var frame = document.getElementById('frame');
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.src = src;
+
+  var log = [];
+
+  function inkCount(ctx, cx, cy, rad) {
+    var x = Math.max(0, Math.round(cx - rad));
+    var y = Math.max(0, Math.round(cy - rad));
+    var size = Math.round(rad * 2);
+    if (size <= 0) return -1;
+    var data;
+    try { data = ctx.getImageData(x, y, size, size).data; } catch (e) { return -2; }
+    var n = 0;
+    for (var i = 0; i < data.length; i += 4) {
+      if (data[i + 3] > 40) n++;          // 有任何不透明像素就算粒子
+    }
+    return n;
+  }
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var win = frame.contentWindow;
+      var doc = win.document;
+      var canvas = doc.getElementById('globe');
+      var art = doc.querySelector('.art-frame');
+      if (!canvas || !art) { document.title = 'BLAST-VERIFY=找不到 canvas/art'; return; }
+      var ctx = canvas.getContext('2d');
+
+      var rect = canvas.getBoundingClientRect();
+      // 炸点：球面内偏上，确保落在球上
+      var px = rect.width * 0.5;
+      var py = rect.height * 0.35;
+      var RAD = 70;
+
+      function sample(tag) {
+        log.push(tag + '=' + inkCount(ctx, px, py, RAD));
+      }
+
+      sample('t0');
+
+      var ev = new win.PointerEvent('pointerdown', {
+        bubbles: true, cancelable: true,
+        clientX: rect.left + px, clientY: rect.top + py, pointerType: 'mouse',
+      });
+      art.dispatchEvent(ev);
+      var touched = art.classList.contains('is-touched');
+
+      // 立刻采样一次（同一帧，位移还没发生）
+      sample('t1_now');
+      setTimeout(function () { sample('t2_300ms'); }, 300);
+      setTimeout(function () { sample('t3_700ms'); }, 700);
+      setTimeout(function () { sample('t4_1500ms'); }, 1500);
+      setTimeout(function () { sample('t5_2600ms'); }, 2600);
+      setTimeout(function () {
+        document.title = 'BLAST-VERIFY=' + log.join(' ') + ' | 提示已隐藏=' + touched;
+      }, 3200);
+    }, 1000);
+  });
+})();
+</script>
+</body>
+</html>
