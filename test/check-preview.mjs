@@ -204,13 +204,13 @@ test('入场动画有兜底：IO 未触发或静态出图时内容必须可见',
 
 test('受 brief 要求的渐变/阴影/玻璃必须逐处写明理由', () => {
   // 客户给的参考站是一张渐变大图，所以渐变/玻璃/阴影是这份 brief 的内容而非装饰。
-  // 代价是：每一处都必须带 taste-skill-ignore 注释说明理由，没写理由的直接判失败。
+  // 代价是：每一处都必须带 decorative 注释说明理由，没写理由的直接判失败。
   const css = styleBlock(raw)
   const declaration = /^\s*[^:;{}]*\b(box-shadow|backdrop-filter|text-shadow)\s*:/
   const offenders = css
     .split('\n')
     .filter((line) => {
-      if (/taste-skill-ignore/.test(line)) return false
+      if (/decorative/.test(line)) return false
       return declaration.test(line) || /gradient\(/i.test(line)
     })
   assert.deepEqual(offenders, [], `这些渐变/阴影没有写明理由：\n${offenders.join('\n')}`)

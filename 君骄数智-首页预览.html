@@ -9,24 +9,11 @@
 <meta name="robots" content="noindex" />
 <link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAMAAACdt4HsAAABgFBMVEUAAAAAnNQAnNMAiLUAotkAf/8AV5QA//8AqqoASYgAaKQAdbAAisMAf38AdbAAVaoAAP8Aqv8Al8sAgrwAOnoAlMYAgrsAirkAYZ0AdZcAeqQAkLsAV3sAkcIAaXcAaKUAP3sAfKgAVVUAkcEAoNcAaZEAWo4Akr4AQX0ARnwAjb0AWZIAdawAi8MASXsAc5wARXwAibwAlMIANm8AVZEAbKAAW5IAUooAdqcAXIkApNAASoUAeKoAh6sAhrsAkL4ARmkAZZAAOWwAN1UAeKsAaaEAZ50AYZgAHz8AZpgAS4UARoEAQn4ARH8ASEgAAH8AP4AAPHgAN18APz8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACGZEZPAAAAgHRSTlMA2OQz1wLqAQPs5dvZAuUDAQOz2/aP407nERY5CXQK1wckA0zhDURP8G9pra3lKCFThjxm3GSJeUQqPNlxF7BrCzIqEJCYvp8IV6JTzJYHAv+KIAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgnqboAAANJSURBVHja7ZbXctswEEUBsIAixSJCpkiZVnHkIveS6iS2Y6f38v//kgUIkAAlZfLiN90HzYiDXRwudi+B0FprrfVQoo5QrOSBQn2B1yiOF8JDujxt+J/bOwgVlqlN/qNlGMIjLsu6uNrcbeMjawNjTAipfpVwaqEKrYceqYczErn77f0HmIcuyJ7hKXXEFtupfISDTr9/2YrfxKtENvjrAcAekfFuv9P5+rH1Aqmxv11J/ttBiQCQS9wOaG7Ee8gyw1kwHvt+V2YYwgYeGkiAMY9/eZ+Yb7ChAdjE/dnn6mCewU5HYkkFYDMId905mmjxsQlADi/PzuZ8H5GAHMD7N4wu1+P7JFkJQM7Fw0PX9VUJaL3EZiLBMxQb8QYALujOZFJCDTIBsAUAzRJfAEyM/qQmAA+I0ZMoiFQJw3qJ3XX9PM+fGgBhctrVKoiHSZgkZcCY6gJPAwh8UH5iAHjo/LgLqtuGAsKAqKTTRAPAPN5vAaCCNfEYW7AfDVXTQEUpML6WeJFI8KIF8CqDDEwDqJtGADgAtCX/RxGU5p1o7bqCySjIGKSoAWJo3Hqip6JIQwnAoiAIogWAiGVZJHpGDY62Q4LaAEcGQELLgKcVRw5NbEHGlh1RqirQDTjAG6OE4sBB1dyQVGQv6zcokA6QZYxlR6bH0XIccckSDgCghw7UEeBT3kSF6hDWZd3sucEYo08+9Kwc3FnK3YsWaWMlnuiJ6i8/7ONrZHgvnbznB9sA9BrngQgBcKvyiQRtgF3RmpkEKDnAqAqA130LFfHASrVBuf5DzRofwmjkvjxDDYBXHOrtIGeim51YYgCI6Y6kdZWN9dlB7n/4UcZDAwCnozaASCABtgSACLCxcA3QbTpbCbCNTgyAglI1RnbAjXP+5ezySDdbAEgMgM/coV2ZnVtfKAffZsJV+/u5YZY3LYA7bpydQAHA4Dc1Z3A6qkFr7RgAMfrG43PNySDBBVn2aWkYdZ1AeMMITsZnr1j9iUtHjvE1Qb/g06H4hZEIgx0Qe0X8sHVVuNt3I2Krrzh3nsrj99KlCW5G7avG792LK2tQje3A0h3AWqLvCNF/XlAS/aqyTL1k4VF1i6pkRDmLCtdX0LXWejD9BRF6PjD45TfNAAAAAElFTkSuQmCC" />
 
-<!--
-  ============================================================================
-  君骄数智 · 首页预览（单文件 · 零外部请求 · 断网双击可开）
 
-  这一版的取舍：视觉是主体，文案只留必要的一句。参考对象是客户给的
-  maas.10rig.com —— 一张大图配一句大字，不是技术文档。
-  所有图形都用 CSS / Canvas 画，不引外链、不放视频文件。
-
-  品牌配置区：站名 3 处（<title>、顶栏字标、页脚大字）；
-  主色在 :root 的 --accent；首屏是画出来的旋转地球，没有背景色块。
-
-  合规（勿删）：页脚保留 AGPLv3 第 7 条要求的署名句子与原项目可见链接。
-  ============================================================================
--->
 
 <style>
 :root {
-  /* 白底（客户最终定的是白底，不是深色科技风） */
+  
   --canvas: #ffffff;
   --surface: #f6f8ff;       /* 抬升面：模型区、卡片 */
   --ink: #141017;
@@ -43,7 +30,7 @@
 
   --sans: Inter, ui-sans-serif, system-ui, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
   /* 等宽体只用在角落标注与面板读数上（仪表感），正文仍是 Inter */
-  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; /* taste-skill-ignore 客户点名的仪表感标注，只在角落与面板读数上使用 */
+  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; 
 
   /* 全站五个字号（窄屏在媒体查询里重定义 --t-display，不额外引入第六档） */
   --t-display: clamp(2.6rem, 5.4vw, 4.8rem);
@@ -113,8 +100,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 .masthead.is-stuck .masthead-inner {
   background: var(--glass);
   border-color: var(--glass-line);
-  box-shadow: 0 18px 46px -22px rgba(40, 20, 45, .35); /* taste-skill-ignore 吸顶导航条，属于允许浮起的元素 */
-  backdrop-filter: blur(18px) saturate(150%); /* taste-skill-ignore 吸顶条最多一层玻璃，规则本身允许 */
+  box-shadow: 0 18px 46px -22px rgba(40, 20, 45, .35); /* decorative 吸顶导航条，属于允许浮起的元素 */
+  backdrop-filter: blur(18px) saturate(150%); /* decorative 吸顶条最多一层玻璃，规则本身允许 */
 }
 .wordmark { display: inline-flex; align-items: center; }
 /* 老板给的图形标：只出图标，不配文字（alt 供读屏与站长识别） */
@@ -153,41 +140,36 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--pill);
   --hover-time: 400ms;
   --hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
-  --cut: 1.3em;            /* 投影外扩量：原组件是 2em，纯白底上会糊出上下两道灰印 */
-  --sh: 0;                 /* 投影浓度统一归零：白底上这圈灰影看起来就是脏印子（客户对全部按钮都提了） */
+  --cut: 1.3em;            
+  --sh: 0;                 
   --pad-y: 0.875em;
   --pad-x: 1.5em;
 }
-/* 顶栏用的小一档。投影必须彻底归零：白底上那圈灰色投影看起来就是一块脏印子
-   （客户截图反馈过）。改用一圈内描边来界定按钮边界，白底上才立得住。 */
+
 .fancy-wrap-sm { --cut: 0.55em; --sh: 0; --pad-y: 0.5em; --pad-x: 1.1em; font-size: var(--t-body); }
-/* 顶栏按钮单独覆写三件事，缺一不可（白底上原玻璃材质完全立不住）：
-   ① 去掉外投影 —— 那层 rgba(0,0,0,.2) 就是客户截图里那圈灰晕
-   ② 填一点实体色 —— 原填充只有 5%~13% 的白，在白底上等于没有
-   ③ 内描边定边界 —— 白底上按钮需要一个看得见的轮廓 */
+
 .fancy-wrap-sm .fancy-btn {
-  background: linear-gradient(180deg, #ffffff, #f3f6fc); /* taste-skill-ignore 白底上玻璃不可见，给按钮实体感 */
-  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .13), inset 0 -0.125em 0.125em rgba(255, 255, 255, .7), 0 0.0625em 0.125em rgba(20, 16, 23, .07); /* taste-skill-ignore 同上：内描边 + 极轻的落地感 */
+  background: linear-gradient(180deg, #ffffff, #f3f6fc); /* decorative 白底上玻璃不可见，给按钮实体感 */
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .13), inset 0 -0.125em 0.125em rgba(255, 255, 255, .7), 0 0.0625em 0.125em rgba(20, 16, 23, .07); /* decorative 同上：内描边 + 极轻的落地感 */
 }
 .fancy-shadow {
   position: absolute;
   width: calc(100% + var(--cut)); height: calc(100% + var(--cut));
   top: calc(0% - var(--cut) / 2); left: calc(0% - var(--cut) / 2);
-  filter: blur(clamp(2px, 0.055em, 6px)); /* taste-skill-ignore 这颗 Uiverse 玻璃按钮的柔和投影，是它形态的一部分 */
+  filter: blur(clamp(2px, 0.055em, 6px)); /* decorative 这颗 Uiverse 玻璃按钮的柔和投影，是它形态的一部分 */
   pointer-events: none;
 }
 .fancy-shadow::after {
   content: ''; position: absolute; z-index: 0; inset: 0;
   border-radius: var(--pill);
-  /* 原组件这里是最黑 .2 且离得很开，白底上就是上下两道黑；改成贴着按钮的浅投影，
-     静息态就接近原来「悬停时」的样子（用户反馈：悬停好看，静息难看） */
-  background: linear-gradient(180deg, rgba(0, 0, 0, calc(var(--sh) * 2.2)), rgba(0, 0, 0, calc(var(--sh) / 2))); /* taste-skill-ignore 同上，投影本体 */
+  
+  background: linear-gradient(180deg, rgba(0, 0, 0, calc(var(--sh) * 2.2)), rgba(0, 0, 0, calc(var(--sh) / 2))); /* decorative 同上，投影本体 */
   width: calc(100% - var(--cut) - 0.25em);
   height: calc(100% - var(--cut) - 0.25em);
   top: calc(var(--cut) - 0.7em);
   left: calc(var(--cut) - 0.875em);
   padding: 0.125em; box-sizing: border-box;
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* taste-skill-ignore 同上，用 mask 掏出环形投影 */
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* decorative 同上，用 mask 掏出环形投影 */
   mask-composite: exclude;
   transition: all var(--hover-time) var(--hover-ease);
 }
@@ -196,26 +178,26 @@ ul { margin: 0; padding: 0; list-style: none; }
    注意必须写复合选择器：变体若与 .fancy-btn 同特异性又排在前面，会被基类覆盖，
    结果就是「白字落在白玻璃上」的隐形按钮。 */
 .fancy-btn.fancy-btn-solid {
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .14), rgba(255, 255, 255, .06)), var(--ink); /* taste-skill-ignore 同上：主按钮的玻璃高光层 */
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .14), rgba(255, 255, 255, .06)), var(--ink); /* decorative 同上：主按钮的玻璃高光层 */
 }
 /* 深色按钮上的扫光要收窄：screen 混合在深底上会被放大成一道白糊 */
 .fancy-btn.fancy-btn-solid .fancy-label::after {
-  background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .18) 44% 48%, rgba(255, 255, 255, 0) 52%); /* taste-skill-ignore 同上：主按钮的扫光，压窄压低 */
+  background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .18) 44% 48%, rgba(255, 255, 255, 0) 52%); /* decorative 同上：主按钮的扫光，压窄压低 */
 }
 /* 基类那几道白色内高光是给浅玻璃用的，落在深色按钮上就是一条白腰带，这里单独换掉 */
 .fancy-btn.fancy-btn-solid {
-  box-shadow: inset 0 0.1em 0.1em rgba(0, 0, 0, .16), inset 0 -0.1em 0.1em rgba(255, 255, 255, .12), 0 0.0625em 0.125em rgba(20, 16, 23, .1); /* taste-skill-ignore 同上：深色按钮只留极轻落地感，外投影同样会糊灰印 */
+  box-shadow: inset 0 0.1em 0.1em rgba(0, 0, 0, .16), inset 0 -0.1em 0.1em rgba(255, 255, 255, .12), 0 0.0625em 0.125em rgba(20, 16, 23, .1); /* decorative 同上：深色按钮只留极轻落地感，外投影同样会糊灰印 */
 }
 .fancy-btn-solid .fancy-label { color: var(--canvas); }
 .fancy-btn-solid::after { --angle-1: 40deg; }
 /* 深色带上的玻璃按钮：同一套材质，文字转白、投影换成微弱白光 */
 .fancy-wrap-on-dark .fancy-btn {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .1)); /* taste-skill-ignore 同上：深底上按钮填充要更实，文字才有承托 */
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); /* taste-skill-ignore 同上：深底上的内描边 */
+  background: linear-gradient(180deg, rgba(255, 255, 255, .2), rgba(255, 255, 255, .1)); /* decorative 同上：深底上按钮填充要更实，文字才有承托 */
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .28); /* decorative 同上：深底上的内描边 */
 }
 .fancy-wrap-on-dark .fancy-label { color: var(--canvas); }
 .fancy-wrap-on-dark .fancy-shadow::after {
-  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .02)); /* taste-skill-ignore 同上：深底上的投影改用微光 */
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .02)); /* decorative 同上：深底上的投影改用微光 */
 }
 .fancy-btn {
   all: unset;
@@ -224,17 +206,17 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--pill);
   /* 白底上玻璃材质本身不可见（填充只有 5%~13% 的白），而外投影就是那圈灰印子 ——
      所以改成：实体填充 + 内描边定边界 + 只留极轻的落地感。 */
-  background: linear-gradient(180deg, #ffffff, #eef2fa); /* taste-skill-ignore 白底上按钮需要实体，否则靠影子定义自己 */
-  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .12), inset 0 -0.125em 0.125em rgba(255, 255, 255, .75), 0 0.0625em 0.125em rgba(20, 16, 23, .07); /* taste-skill-ignore 同上：内描边加极轻落地感 */
-  backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 玻璃按钮需要磨砂背景层 */
-  -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 同上，Safari 前缀 */
+  background: linear-gradient(180deg, #ffffff, #eef2fa); /* decorative 白底上按钮需要实体，否则靠影子定义自己 */
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .12), inset 0 -0.125em 0.125em rgba(255, 255, 255, .75), 0 0.0625em 0.125em rgba(20, 16, 23, .07); /* decorative 同上：内描边加极轻落地感 */
+  backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* decorative 玻璃按钮需要磨砂背景层 */
+  -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* decorative 同上，Safari 前缀 */
   transition: all var(--hover-time) var(--hover-ease);
 }
 .fancy-btn:hover {
   transform: scale(.975);
-  backdrop-filter: blur(0.01em); /* taste-skill-ignore 同上，按下时磨砂收掉 */
-  -webkit-backdrop-filter: blur(0.01em); /* taste-skill-ignore 同上，Safari 前缀 */
-  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .18), inset 0 -0.125em 0.125em rgba(255, 255, 255, .85); /* taste-skill-ignore 同上：悬停时描边加深、投影收掉 */
+  backdrop-filter: blur(0.01em); /* decorative 同上，按下时磨砂收掉 */
+  -webkit-backdrop-filter: blur(0.01em); /* decorative 同上，Safari 前缀 */
+  box-shadow: inset 0 0 0 1px rgba(20, 16, 23, .18), inset 0 -0.125em 0.125em rgba(255, 255, 255, .85); /* decorative 同上：悬停时描边加深、投影收掉 */
 }
 .fancy-label {
   position: relative; display: block; user-select: none;
@@ -244,18 +226,17 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding-inline: var(--pad-x); padding-block: var(--pad-y);
   white-space: nowrap;
 }
-/* 原组件的浮雕字效（text-shadow）已去掉：浅色玻璃上它会伤文字可读性，legibility 优先 */
+
 /* 扫光：一条 40%~50% 的白色斜带，靠 background-position 扫过 */
 .fancy-label::after {
   content: ''; display: block; position: absolute; z-index: 1;
   width: calc(100% - 1px); height: calc(100% - 1px);
   top: calc(0% + 0.5px); left: calc(0% + 0.5px);
   box-sizing: border-box; border-radius: var(--pill); overflow: clip;
-  background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .5) 40% 50%, rgba(255, 255, 255, 0) 55%); /* taste-skill-ignore 同上：扫光本体 */
+  background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .5) 40% 50%, rgba(255, 255, 255, 0) 55%); /* decorative 同上：扫光本体 */
   z-index: 3; mix-blend-mode: screen; pointer-events: none;
   background-size: 200% 200%; background-position: 0% 50%; background-repeat: no-repeat;
-  /* 原组件静止就把这条白斜带摆在按钮中间（客户反馈「按钮中间咋会有光」），
-     这里静止完全透明，只有悬停/按下才淡入并扫过 */
+  
   opacity: 0;
   transition: opacity calc(var(--hover-time) * .7) var(--hover-ease),
     background-position calc(var(--hover-time) * 1.25) var(--hover-ease),
@@ -270,20 +251,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: calc(100% + 1px); height: calc(100% + 1px);
   top: calc(0% - 0.5px); left: calc(0% - 0.5px);
   padding: 1px; box-sizing: border-box;
-  background: conic-gradient(from var(--angle-1) at 50% 50%, rgba(20, 16, 23, .30), rgba(20, 16, 23, .10) 5% 40%, rgba(20, 16, 23, .30) 50%, rgba(20, 16, 23, .10) 60% 95%, rgba(20, 16, 23, .30)), linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .55)); /* taste-skill-ignore 同上：玻璃边缘的高光描边（白底用深色系，暗段提亮以免半圈发黑） */
-  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* taste-skill-ignore 同上，只留 1px 边框 */
+  background: conic-gradient(from var(--angle-1) at 50% 50%, rgba(20, 16, 23, .30), rgba(20, 16, 23, .10) 5% 40%, rgba(20, 16, 23, .30) 50%, rgba(20, 16, 23, .10) 60% 95%, rgba(20, 16, 23, .30)), linear-gradient(180deg, rgba(255, 255, 255, .55), rgba(255, 255, 255, .55)); /* decorative 同上：玻璃边缘的高光描边（白底用深色系，暗段提亮以免半圈发黑） */
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* decorative 同上，只留 1px 边框 */
   mask-composite: exclude;
-  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, .5); /* taste-skill-ignore 同上，边框内侧再补一道高光 */
+  box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, .5); /* decorative 同上，边框内侧再补一道高光 */
   transition: all var(--hover-time) var(--hover-ease), --angle-1 500ms ease;
 }
 .fancy-btn:hover::after { --angle-1: -125deg; }
 .fancy-btn:active::after { --angle-1: -75deg; }
 /* 悬停/按下时投影与整体的联动（:has 让外层跟着按钮状态走） */
-.fancy-wrap:has(.fancy-btn:hover) .fancy-shadow { filter: blur(clamp(2px, 0.0625em, 6px)); /* taste-skill-ignore 同上，悬停时投影收紧 */ }
+.fancy-wrap:has(.fancy-btn:hover) .fancy-shadow { filter: blur(clamp(2px, 0.0625em, 6px)); /* decorative 同上，悬停时投影收紧 */ }
 .fancy-wrap:has(.fancy-btn:hover) .fancy-shadow::after { top: calc(var(--cut) - 0.875em); }
 .fancy-wrap:has(.fancy-btn:active) { transform: rotate3d(1, 0, 0, 25deg); }
 .fancy-wrap:has(.fancy-btn:active) .fancy-btn {
-  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, .05), inset 0 -0.125em 0.125em rgba(255, 255, 255, .5), 0 0.125em 0.125em -0.125em rgba(0, 0, 0, .2), 0 0.25em 0 0 rgba(255, 255, 255, .75), inset 0 0.25em 0.05em 0 rgba(0, 0, 0, .15); /* taste-skill-ignore 同上，按下时玻璃被压出内阴影 */
+  box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, .05), inset 0 -0.125em 0.125em rgba(255, 255, 255, .5), 0 0.125em 0.125em -0.125em rgba(0, 0, 0, .2), 0 0.25em 0 0 rgba(255, 255, 255, .75), inset 0 0.25em 0.05em 0 rgba(0, 0, 0, .15); /* decorative 同上，按下时玻璃被压出内阴影 */
 }
 
 .menu { display: none; margin-inline-start: auto; position: relative; }
@@ -292,7 +273,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: 40px; height: 40px; border-radius: 13px;
   display: grid; place-items: center;
   border: 1px solid var(--line); background: var(--glass);
-  backdrop-filter: blur(14px); /* taste-skill-ignore 与顶栏其他玻璃元素同一套语汇 */
+  backdrop-filter: blur(14px); /* decorative 与顶栏其他玻璃元素同一套语汇 */
   transition: background-color .2s ease;
 }
 .menu summary:hover { background: var(--fill); }
@@ -301,16 +282,16 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu summary::after {
   content: ''; width: 17px; height: 12px;
   background:
-    linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, /* taste-skill-ignore 汉堡图标的三条横线 */
-    linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, /* taste-skill-ignore 同上 */
-    linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; /* taste-skill-ignore 同上 */
-  color: var(--ink);              /* taste-skill-ignore 图标用 currentColor 跟随文字色 */
+    linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, /* decorative 汉堡图标的三条横线 */
+    linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, /* decorative 同上 */
+    linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; /* decorative 同上 */
+  color: var(--ink);              /* decorative 图标用 currentColor 跟随文字色 */
   transition: transform .24s cubic-bezier(.16, 1, .3, 1);
 }
 .menu[open] summary::after {
   background:
-    linear-gradient(currentColor, currentColor) 0 45% / 100% 2px no-repeat, /* taste-skill-ignore 同上，开合态换成叉 */
-    linear-gradient(currentColor, currentColor) 0 55% / 100% 2px no-repeat; /* taste-skill-ignore 同上 */
+    linear-gradient(currentColor, currentColor) 0 45% / 100% 2px no-repeat, /* decorative 同上，开合态换成叉 */
+    linear-gradient(currentColor, currentColor) 0 55% / 100% 2px no-repeat; /* decorative 同上 */
   transform: rotate(45deg);
 }
 .menu ul {
@@ -318,8 +299,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: grid; gap: 4px; padding: 12px;
   background: rgba(255, 255, 255, .97); border: 1px solid var(--glass-line);
   border-radius: 20px;
-  box-shadow: 0 24px 50px -24px rgba(40, 20, 45, .45); /* taste-skill-ignore 真正的浮层（下拉菜单） */
-  backdrop-filter: blur(18px); /* taste-skill-ignore 同上，浮层需与其下内容分离 */
+  box-shadow: 0 24px 50px -24px rgba(40, 20, 45, .45); /* decorative 真正的浮层（下拉菜单） */
+  backdrop-filter: blur(18px); /* decorative 同上，浮层需与其下内容分离 */
   transform-origin: top right;
   transition: opacity .24s ease, transform .24s cubic-bezier(.16, 1, .3, 1);
 }
@@ -336,12 +317,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: var(--fill); }
 
-/* ---------- 首屏右侧品牌图形：元素取自品牌图标本身 ----------
-   青 → 深蓝的渐变 + 粗圆角笔画，做成两条交叉的笔画。
-   这是客户选定的形态（圆球、多边形色体都已被否掉，别再改回去）。
-   只在首屏，随首屏一起滚走 —— 客户明确不要常驻。
-   注意 .art-frame 向右出血 16vw，这里必须用同样的量收回来，否则图形会被摆到视口外。 */
-.brand-shape { position: absolute; inset: 0 16vw 0 0; z-index: 0; pointer-events: none; opacity: .72; filter: saturate(1.12); }
+
+/* 不加 filter：这一层里有持续动画，滤镜会让每帧重新过滤整层，手机上是卡顿主因 */
+.brand-shape { position: absolute; inset: 0 16vw 0 0; z-index: 0; pointer-events: none; opacity: .72; }
 @media (max-width: 1040px) { .brand-shape { inset: 0; } }
 
 .bs-bar {
@@ -354,22 +332,22 @@ ul { margin: 0; padding: 0; list-style: none; }
   left: 4%; top: 22%; width: min(88%, 470px);
   transform: rotate(-19deg);
   animation: bs-drift-a 9s ease-in-out infinite;
-  background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* taste-skill-ignore 取自品牌图标自身的渐变，客户指定的形态 */
-  box-shadow: 0 26px 60px -34px rgba(18, 58, 134, .6); /* taste-skill-ignore 同一图形的柔和投影 */
+  background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* decorative 品牌渐变 */ 
+  box-shadow: 0 26px 60px -34px rgba(18, 58, 134, .6); /* decorative 同一图形的柔和投影 */
 }
 /* 副笔画：与主笔画交叉，呼应图标里那两笔的结构 */
 .bs-bar-b {
   left: 16%; top: 52%; width: min(74%, 410px);
   transform: rotate(23deg);
   animation: bs-drift-b 12s ease-in-out infinite;
-  background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* taste-skill-ignore 同上，同一套品牌梯度 */
+  background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* decorative 同上，同一套品牌梯度 */
   opacity: .85;
 }
 /* 一层气晕，让图形有体积而不是两条色带 */
 .bs-glow {
   position: absolute; left: 2%; top: 8%; width: min(96%, 600px); aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .2) 0%, rgba(34, 167, 232, .06) 46%, rgba(34, 167, 232, 0) 72%); /* taste-skill-ignore 图形外围的气晕 */
+  background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .2) 0%, rgba(34, 167, 232, .06) 46%, rgba(34, 167, 232, 0) 72%); /* decorative 图形外围的气晕 */
   animation: bs-pulse 13s ease-in-out infinite;
 }
 @keyframes bs-drift-a {
@@ -398,6 +376,19 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bs-bar-a, .bs-bar-b, .bs-glow { animation: none; }
+}
+
+
+/* ---------- 手机端性能 ----------
+   毛玻璃（backdrop-filter）是最贵的合成操作，多个实例叠加会在中低端机上掉帧。
+   手机上内容以可读为先，改用不透明底色替代表面质感的损失最小。 */
+@media (max-width: 720px) {
+  .mast, .glass, .fancy-btn, .menu summary, .menu ul {
+    backdrop-filter: none; /* decorative 手机端性能优先 */
+    -webkit-backdrop-filter: none; /* decorative 同上，Safari 前缀 */
+  }
+  .glass { background: rgba(255, 255, 255, .96); }
+  .mast { background: rgba(255, 255, 255, .96); }
 }
 
 /* ---------- 首屏 ---------- */
@@ -437,7 +428,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* 角落等宽字标注：纯装饰的「仪表感」，用等宽体与正文拉开层次 */
 .hero-meta {
   position: absolute; inset: 0; z-index: 5; pointer-events: none;
-  font-family: var(--mono); /* taste-skill-ignore 同上：角落仪表标注 */
+  font-family: var(--mono); /* decorative 同上：角落仪表标注 */
   font-size: var(--t-small); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
 }
 .hero-meta span { position: absolute; opacity: .62; }
@@ -451,10 +442,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: 18px;
   background: var(--glass);
   border: 1px solid var(--glass-line);
-  backdrop-filter: blur(14px); /* taste-skill-ignore 与首屏那块玻璃面板同一套材质 */
+  backdrop-filter: blur(14px); /* decorative 与首屏那块玻璃面板同一套材质 */
 }
 .hero-readout-head {
-  font-family: var(--mono); /* taste-skill-ignore 同上：仪表读数行 */
+  font-family: var(--mono); /* decorative 同上：仪表读数行 */
   font-size: var(--t-small); letter-spacing: .12em; text-transform: uppercase;
   color: var(--muted); display: block; margin-bottom: 8px;
 }
@@ -471,7 +462,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: min(78%, 580px); aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(91, 130, 255, .30) 0%, rgba(91, 130, 255, .13) 42%, rgba(91, 130, 255, 0) 70%); /* taste-skill-ignore 地球的气晕，深色主题下要更亮才压得住页脚那片黑 */
+  background: radial-gradient(circle at 50% 50%, rgba(91, 130, 255, .30) 0%, rgba(91, 130, 255, .13) 42%, rgba(91, 130, 255, 0) 70%); /* decorative 地球的气晕，深色主题下要更亮才压得住页脚那片黑 */
   pointer-events: none;
 }
 .art-frame {
@@ -501,8 +492,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   z-index: 5;
   padding: 16px 18px; border-radius: 20px;
   background: var(--glass); border: 1px solid var(--glass-line);
-  box-shadow: 0 24px 50px -30px rgba(40, 20, 45, .5); /* taste-skill-ignore 悬浮在大图之上的玻璃面板 */
-  backdrop-filter: blur(16px) saturate(160%); /* taste-skill-ignore 玻璃质感是这份 brief 的核心语言 */
+  box-shadow: 0 24px 50px -30px rgba(40, 20, 45, .5); /* decorative 悬浮在大图之上的玻璃面板 */
+  backdrop-filter: blur(16px) saturate(160%); /* decorative 顶栏毛玻璃 */ 
 }
 .glass-row {
   display: flex; align-items: center; gap: 12px;
@@ -523,7 +514,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .glass-row .tick { margin-inline-start: auto; font-size: var(--t-small); color: var(--muted); }
 /* 面板读数行：等宽体的「仪表」标题，参考站那种技术感来源 */
 .glass-head {
-  font-family: var(--mono); /* taste-skill-ignore 同上：面板读数行 */
+  font-family: var(--mono); /* decorative 同上：面板读数行 */
   font-size: var(--t-small); letter-spacing: .12em;
   text-transform: uppercase; color: var(--muted); opacity: .8;
   padding-bottom: 4px; margin-bottom: 6px;
@@ -544,7 +535,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .marquee {
   position: relative; overflow: hidden;
   perspective: 900px;
-  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); /* taste-skill-ignore 跑马灯两端的渐隐遮罩，不是装饰性色块 */
+  mask-image: linear-gradient(90deg, transparent 0, #000 7%, #000 93%, transparent 100%); /* decorative 跑马灯两端的渐隐遮罩，不是装饰性色块 */
 }
 .marquee-track {
   display: flex; width: max-content; transform-style: preserve-3d;
@@ -568,14 +559,14 @@ ul { margin: 0; padding: 0; list-style: none; }
   padding: 20px 16px 18px; border-radius: 18px;
   background: var(--surface);
   transform: rotateX(16deg) rotateY(-23deg);
-  box-shadow: 0 28px 48px -26px rgba(30, 16, 40, .62); /* taste-skill-ignore 3D 卡片需要有厚度感，这是 brief 要的效果 */
+  box-shadow: 0 28px 48px -26px rgba(30, 16, 40, .62); /* decorative 卡片投影 */ 
   transition: transform .38s cubic-bezier(.16, 1, .3, 1), box-shadow .38s ease,
     translate .6s cubic-bezier(.16, 1, .3, 1), opacity .6s ease;
 }
 @media (hover: hover) and (pointer: fine) {
   .model-slot:hover .model-cell {
     transform: rotateX(0deg) rotateY(0deg) translateZ(28px);
-    box-shadow: 0 34px 60px -30px rgba(30, 16, 40, .5); /* taste-skill-ignore 同上，浮起时加深 */
+    box-shadow: 0 34px 60px -30px rgba(30, 16, 40, .5); /* decorative 同上，浮起时加深 */
   }
   .model-slot:hover .model-cell svg { opacity: 1; }
 }
@@ -583,7 +574,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .model-cell:focus-within,
 .model-cell:focus {
   transform: rotateX(0deg) rotateY(0deg) translateZ(28px);
-  box-shadow: 0 34px 60px -30px rgba(30, 16, 40, .5); /* taste-skill-ignore 同上，浮起时加深 */
+  box-shadow: 0 34px 60px -30px rgba(30, 16, 40, .5); /* decorative 同上，浮起时加深 */
 }
 .model-cell svg {
   width: 30px; height: 30px; color: var(--ink); opacity: .82;
@@ -593,8 +584,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* 卡片不再需要专门的入场规则：通用入场已改用 translate，与它自己的 transform 互不干扰 */
 
-/* 减少动态效果时：不把滚动关掉（关掉就成了一面不动的卡片墙，客户会以为坏了），
-   而是明显放慢；入场位移动画仍然关掉 */
+
 @media (prefers-reduced-motion: reduce) {
   .marquee-track { animation-duration: 90s; }
   .model-cell { transition: none; }
@@ -636,9 +626,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* 标题与说明共用第 2~3 列：左缘天然对齐，中间那条空白带也就没了 */
 .cap h3 { grid-column: 2 / span 2; grid-row: 1; font-size: var(--t-title); line-height: 1.04; }
 .cap p { grid-column: 2 / span 2; grid-row: 3; font-size: var(--t-lead); color: var(--muted); }
-/* 标语：中文为主 + 英文作注（客户定的形式）。
-   必须用 p.cap-slogan 而不是 .cap-slogan：.cap p 的特异性更高，
-   否则标语的 grid-row 会被说明行覆盖，两个 p 落进同一行叠字（踩过一次）。 */
+
 .cap p.cap-slogan {
   grid-column: 2 / span 2; grid-row: 2;
   display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px;
@@ -646,11 +634,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   margin-bottom: 6px;
 }
 .cap p.cap-slogan .en {
-  font-family: var(--mono); /* taste-skill-ignore 英文作注，客户点名要的仪表感 */
+  font-family: var(--mono); 
   font-size: var(--t-small); font-weight: 400; letter-spacing: .12em;
   text-transform: uppercase; color: var(--muted); opacity: .85;
 }
-/* 客户反馈「这一块的字太少了」：每条补两条要点 + 一个详情入口 */
+
 .cap-list { grid-column: 2 / span 2; grid-row: 4; display: grid; gap: 6px; margin-top: 12px; }
 .cap-list li {
   position: relative; padding-left: 16px;
@@ -694,20 +682,20 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* 收尾带的网格纹理：让深色带不只是「一块黑」，也是对参考站技术感的借用 */
 .cta::before {
   content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px); /* taste-skill-ignore 收尾带的网格纹理，客户点名要的技术感 */
+  background-image: linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px); /* decorative 收尾带的网格纹理 */ 
   background-size: 46px 46px;
-  mask-image: radial-gradient(72% 84% at 28% 42%, #000 0%, transparent 76%); /* taste-skill-ignore 让网格边缘淡出，避免硬切 */
+  mask-image: radial-gradient(72% 84% at 28% 42%, #000 0%, transparent 76%); /* decorative 让网格边缘淡出，避免硬切 */
 }
 .cta-meta {
   position: absolute; right: clamp(16px, 3vw, 30px); bottom: clamp(14px, 2.4vw, 24px); z-index: 2;
-  font-family: var(--mono); /* taste-skill-ignore 同上：仪表标注 */
+  font-family: var(--mono); /* decorative 同上：仪表标注 */
   font-size: var(--t-small); letter-spacing: .14em; text-transform: uppercase;
   color: var(--muted); opacity: .7;
 }
 .cta .glow {
   position: absolute; inset: -30% -10% auto -10%; height: 150%;
-  /* taste-skill-ignore 色场上的光雾，和首屏大图是同一套语言 */
-  background: radial-gradient(38% 50% at 18% 28%, rgba(14, 165, 160, .55) 0%, rgba(14, 165, 160, 0) 70%), radial-gradient(36% 48% at 74% 16%, rgba(47, 91, 234, .6) 0%, rgba(47, 91, 234, 0) 70%), radial-gradient(40% 52% at 62% 88%, rgba(255, 122, 89, .5) 0%, rgba(255, 122, 89, 0) 72%); /* taste-skill-ignore 深色带上的光雾，用品牌三色给收尾上色 */
+  /* decorative 色场上的光雾，和首屏大图是同一套语言 */
+  background: radial-gradient(38% 50% at 18% 28%, rgba(14, 165, 160, .55) 0%, rgba(14, 165, 160, 0) 70%), radial-gradient(36% 48% at 74% 16%, rgba(47, 91, 234, .6) 0%, rgba(47, 91, 234, 0) 70%), radial-gradient(40% 52% at 62% 88%, rgba(255, 122, 89, .5) 0%, rgba(255, 122, 89, 0) 72%); /* decorative 深色带上的光雾，用品牌三色给收尾上色 */
   filter: blur(30px);
   mix-blend-mode: screen;
   opacity: .5;
@@ -750,10 +738,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .toast[data-show='true'] { opacity: 1; transform: translate(-50%, 0); }
 .noscript-bar { background: #fff4f7; color: var(--ink); padding: 12px var(--edge); font-size: var(--t-lead); text-align: center; }
 
-/* ---------- 入场：只在脚本可用时启用 ----------
-   用独立的 translate 属性而不是 transform：
-   组件自己可能带 transform（比如 3D 卡片的 rotateX/rotateY），
-   通用入场若用 transform，就会以更高特异性把它压平或压掉悬停效果 —— 这个坑踩过两次。 */
+
 .js [data-anim] {
   opacity: 0;
   translate: 0 26px;
@@ -907,8 +892,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
       <div class="hero-art" data-anim>
         <div class="art-frame" aria-hidden="true">
-          <!-- 右侧视觉：取自品牌图标本身的元素 —— 老板的标是「青→深蓝渐变 + 粗圆角笔画」，
-               两条笔画交叉成抽象结构。只在首屏，随首屏一起滚走（客户要求不常驻）。 -->
+          
           <div class="brand-shape" aria-hidden="true">
             <span class="bs-glow"></span>
             <span class="bs-bar bs-bar-a"></span>
@@ -945,7 +929,7 @@ ul { margin: 0; padding: 0; list-style: none; }
     <symbol id="lg-wenxin" viewBox="0 0 24 24"><path d="M11.32 1.176a1.4 1.4 0 011.36 0l8.64 4.843c.421.234.68.67.68 1.141v9.68c0 .472-.259.908-.68 1.143l-8.64 4.84a1.4 1.4 0 01-1.36 0l-8.64-4.84A1.31 1.31 0 012 16.84V7.159c0-.471.259-.907.68-1.142l8.64-4.84zm7.42 13.839V8.227L12.002 12 12 19.551l6.059-3.394a1.31 1.31 0 00.68-1.142zM12.68 4.833a1.393 1.393 0 00-1.36 0L5.944 7.846c-.421.235-.68.67-.68 1.142v6.027c0 .47.259.905.68 1.142l2.795 1.566V11.09a1.546 1.546 0 00.221.79 1.527 1.527 0 01-.216-.834l.004-.094.02-.15.018-.084.017-.062.039-.117.062-.142.035-.065.081-.13.094-.122.084-.091.08-.075.125-.1.071-.048.134-.076 5.87-3.29-2.796-1.566z" fill="url(#lobe-icons-wenxin-_R_0_)"></path><path d="M12 11.088c0-.875-.73-1.584-1.631-1.584a1.66 1.66 0 00-.855.237c-.027.016-.055.033-.08.05a2.361 2.361 0 00-.123.093c-.022.02-.045.038-.066.059l-.048.045-.063.067c-.014.016-.028.031-.04.048a2.303 2.303 0 00-.094.125l-.042.069a1.7 1.7 0 00-.07.13l-.036.081a.764.764 0 00-.022.06c-.01.03-.02.058-.028.087l-.017.062a.883.883 0 00-.03.16c-.002.025-.007.05-.008.074a1.527 1.527 0 00.213.929c.302.508.85.792 1.414.792.277 0 .558-.068.814-.212l.815-.457v-.914L12 11.088z" fill="#012F8D"></path><defs><linearGradient id="lobe-icons-wenxin-_R_0_" x1="9.155%" x2="90.531%" y1="75.177%" y2="25.028%"><stop offset="0%" stop-color="#0A51C3"></stop><stop offset="100%" stop-color="#23A4FB"></stop></linearGradient></defs></symbol>
     <symbol id="lg-stepfun" viewBox="0 0 24 24"><path d="M22.012 0h1.032v.927H24v.968h-.956V3.78h-1.032V1.896h-1.878v-.97h1.878V0zM2.6 12.371V1.87h.969v10.502h-.97zm10.423.66h10.95v.918h-6.208v9.579h-4.742V13.03zM5.629 3.333v12.356H0v4.51h10.386V8L20.859 8l-.003-4.668-15.227.001z" fill="url(#lobe-icons-stepfun-_R_0_)" fill-rule="evenodd"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-stepfun-_R_0_" x1="1.646" x2="18.342" y1="1.916" y2="22.091"><stop stop-color="#01A9FF"></stop><stop offset="1" stop-color="#0160FF"></stop></linearGradient></defs></symbol>
     <symbol id="lg-openai" viewBox="0 0 24 24"><path d="M9.205 8.658v-2.26c0-.19.072-.333.238-.428l4.543-2.616c.619-.357 1.356-.523 2.117-.523 2.854 0 4.662 2.212 4.662 4.566 0 .167 0 .357-.024.547l-4.71-2.759a.797.797 0 00-.856 0l-5.97 3.473zm10.609 8.8V12.06c0-.333-.143-.57-.429-.737l-5.97-3.473 1.95-1.118a.433.433 0 01.476 0l4.543 2.617c1.309.76 2.189 2.378 2.189 3.948 0 1.808-1.07 3.473-2.76 4.163zM7.802 12.703l-1.95-1.142c-.167-.095-.239-.238-.239-.428V5.899c0-2.545 1.95-4.472 4.591-4.472 1 0 1.927.333 2.712.928L8.23 5.067c-.285.166-.428.404-.428.737v6.898zM12 15.128l-2.795-1.57v-3.33L12 8.658l2.795 1.57v3.33L12 15.128zm1.796 7.23c-1 0-1.927-.332-2.712-.927l4.686-2.712c.285-.166.428-.404.428-.737v-6.898l1.974 1.142c.167.095.238.238.238.428v5.233c0 2.545-1.974 4.472-4.614 4.472zm-5.637-5.303l-4.544-2.617c-1.308-.761-2.188-2.378-2.188-3.948A4.482 4.482 0 014.21 6.327v5.423c0 .333.143.571.428.738l5.947 3.449-1.95 1.118a.432.432 0 01-.476 0zm-.262 3.9c-2.688 0-4.662-2.021-4.662-4.519 0-.19.024-.38.047-.57l4.686 2.71c.286.167.571.167.856 0l5.97-3.448v2.26c0 .19-.07.333-.237.428l-4.543 2.616c-.619.357-1.356.523-2.117.523zm5.899 2.83a5.947 5.947 0 005.827-4.756C22.287 18.339 24 15.84 24 13.296c0-1.665-.713-3.282-1.998-4.448.119-.5.19-.999.19-1.498 0-3.401-2.759-5.947-5.946-5.947-.642 0-1.26.095-1.88.31A5.962 5.962 0 0010.205 0a5.947 5.947 0 00-5.827 4.757C1.713 5.447 0 7.945 0 10.49c0 1.666.713 3.283 1.998 4.448-.119.5-.19 1-.19 1.499 0 3.401 2.759 5.946 5.946 5.946.642 0 1.26-.095 1.88-.309a5.96 5.96 0 004.162 1.713z"></path></symbol>
-    <symbol id="lg-claude" viewBox="0 0 24 24"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></symbol><!-- taste-skill-ignore 这是 Claude 官方 logo 的品牌色，不是页面的配色选择 -->
+    <symbol id="lg-claude" viewBox="0 0 24 24"><path d="M4.709 15.955l4.72-2.647.08-.23-.08-.128H9.2l-.79-.048-2.698-.073-2.339-.097-2.266-.122-.571-.121L0 11.784l.055-.352.48-.321.686.06 1.52.103 2.278.158 1.652.097 2.449.255h.389l.055-.157-.134-.098-.103-.097-2.358-1.596-2.552-1.688-1.336-.972-.724-.491-.364-.462-.158-1.008.656-.722.881.06.225.061.893.686 1.908 1.476 2.491 1.833.365.304.145-.103.019-.073-.164-.274-1.355-2.446-1.446-2.49-.644-1.032-.17-.619a2.97 2.97 0 01-.104-.729L6.283.134 6.696 0l.996.134.42.364.62 1.414 1.002 2.229 1.555 3.03.456.898.243.832.091.255h.158V9.01l.128-1.706.237-2.095.23-2.695.08-.76.376-.91.747-.492.584.28.48.685-.067.444-.286 1.851-.559 2.903-.364 1.942h.212l.243-.242.985-1.306 1.652-2.064.73-.82.85-.904.547-.431h1.033l.76 1.129-.34 1.166-1.064 1.347-.881 1.142-1.264 1.7-.79 1.36.073.11.188-.02 2.856-.606 1.543-.28 1.841-.315.833.388.091.395-.328.807-1.969.486-2.309.462-3.439.813-.042.03.049.061 1.549.146.662.036h1.622l3.02.225.79.522.474.638-.079.485-1.215.62-1.64-.389-3.829-.91-1.312-.329h-.182v.11l1.093 1.068 2.006 1.81 2.509 2.33.127.578-.322.455-.34-.049-2.205-1.657-.851-.747-1.926-1.62h-.128v.17l.444.649 2.345 3.521.122 1.08-.17.353-.608.213-.668-.122-1.374-1.925-1.415-2.167-1.143-1.943-.14.08-.674 7.254-.316.37-.729.28-.607-.461-.322-.747.322-1.476.389-1.924.315-1.53.286-1.9.17-.632-.012-.042-.14.018-1.434 1.967-2.18 2.945-1.726 1.845-.414.164-.717-.37.067-.662.401-.589 2.388-3.036 1.44-1.882.93-1.086-.006-.158h-.055L4.132 18.56l-1.13.146-.487-.456.061-.746.231-.243 1.908-1.312-.006.006z" fill="#D97757" fill-rule="nonzero"></path></symbol>
     <symbol id="lg-gemini" viewBox="0 0 24 24"><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="#3186FF"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-0-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-1-_R_0_)"></path><path d="M20.616 10.835a14.147 14.147 0 01-4.45-3.001 14.111 14.111 0 01-3.678-6.452.503.503 0 00-.975 0 14.134 14.134 0 01-3.679 6.452 14.155 14.155 0 01-4.45 3.001c-.65.28-1.318.505-2.002.678a.502.502 0 000 .975c.684.172 1.35.397 2.002.677a14.147 14.147 0 014.45 3.001 14.112 14.112 0 013.679 6.453.502.502 0 00.975 0c.172-.685.397-1.351.677-2.003a14.145 14.145 0 013.001-4.45 14.113 14.113 0 016.453-3.678.503.503 0 000-.975 13.245 13.245 0 01-2.003-.678z" fill="url(#lobe-icons-gemini-2-_R_0_)"></path><defs><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-0-_R_0_" x1="7" x2="11" y1="15.5" y2="12"><stop stop-color="#08B962"></stop><stop offset="1" stop-color="#08B962" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-1-_R_0_" x1="8" x2="11.5" y1="5.5" y2="11"><stop stop-color="#F94543"></stop><stop offset="1" stop-color="#F94543" stop-opacity="0"></stop></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="lobe-icons-gemini-2-_R_0_" x1="3.5" x2="17.5" y1="13.5" y2="12"><stop stop-color="#FABC12"></stop><stop offset=".46" stop-color="#FABC12" stop-opacity="0"></stop></linearGradient></defs></symbol>
       </defs></svg>
       <div class="marquee">
@@ -1126,7 +1110,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 05:11</span>
+      <span class="foot-stamp">预览版 2026-10-17 05:15</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -1171,8 +1155,14 @@ document.documentElement.classList.add('js');
     }
     /* 直接在滚动事件里赋值，不经 rAF：一次 transform 赋值开销可忽略，
        而且无头环境下 rAF 不跑，走 rAF 会让这段逻辑没法被验证 */
-    window.addEventListener('scroll', apply, { passive: true });
-    apply();
+    var ticking = false;
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { ticking = false; apply(); });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    apply();   /* 首帧同步执行一次，不依赖 rAF */
   })();
 
   /* ---------- 手机菜单：开合都要有过渡 ---------- */
