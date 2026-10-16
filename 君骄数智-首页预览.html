@@ -346,6 +346,24 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hero-meta span { position: absolute; opacity: .62; }
 .hero-meta-tl { top: clamp(8px, 1.6vw, 20px); left: var(--edge); }
 .hero-meta-br { right: var(--edge); bottom: clamp(8px, 1.6vw, 20px); }
+/* 首屏左下角那块黑：补一张玻璃读数卡片，内容是图形（迷你走势 + 色块），不是文案 */
+.hero-readout {
+  margin-top: clamp(22px, 3vw, 34px);
+  width: min(320px, 100%);
+  padding: 14px 16px 12px;
+  border-radius: 18px;
+  background: var(--glass);
+  border: 1px solid var(--glass-line);
+  backdrop-filter: blur(14px); /* taste-skill-ignore 与首屏那块玻璃面板同一套材质 */
+}
+.hero-readout-head {
+  font-family: var(--mono); /* taste-skill-ignore 同上：仪表读数行 */
+  font-size: var(--t-small); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--muted); display: block; margin-bottom: 8px;
+}
+.hero-readout svg { width: 100%; height: auto; display: block; }
+.hero-readout .ro-bar { opacity: .5; }
+@media (max-width: 1040px) { .hero-readout { display: none; } }
 
 /* ---------- 那张大图：参考站的主角，约占 1.9 个视口高并向右侧出血 ---------- */
 .hero-art { position: relative; min-height: clamp(560px, 74vw, 1060px); }
@@ -356,7 +374,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: min(78%, 580px); aspect-ratio: 1;
   transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 50%, rgba(47, 91, 234, .17) 0%, rgba(47, 91, 234, .06) 46%, rgba(47, 91, 234, 0) 72%); /* taste-skill-ignore 地球的气晕，客户要求整页上颜色 */
+  background: radial-gradient(circle at 50% 50%, rgba(91, 130, 255, .30) 0%, rgba(91, 130, 255, .13) 42%, rgba(91, 130, 255, 0) 70%); /* taste-skill-ignore 地球的气晕，深色主题下要更亮才压得住页脚那片黑 */
   pointer-events: none;
 }
 .art-frame {
@@ -537,7 +555,23 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: relative; overflow: hidden;
   border-radius: var(--r-card);
   padding: clamp(46px, 8vw, 110px) clamp(24px, 5vw, 72px);
-  background: var(--ink); color: var(--canvas);
+  /* 深色主题下不能再拿 --ink 当底（那是近白，整块会翻白）；
+     改用比页面底更沉的黑 + 品牌光雾，仍然是这一页的收束点 */
+  background: #05070b; color: var(--ink);
+  border: 1px solid var(--line);
+}
+/* 收尾带的网格纹理：让深色带不只是「一块黑」，也是对参考站技术感的借用 */
+.cta::before {
+  content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background-image: linear-gradient(rgba(255, 255, 255, .055) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .055) 1px, transparent 1px); /* taste-skill-ignore 收尾带的网格纹理，客户点名要的技术感 */
+  background-size: 46px 46px;
+  mask-image: radial-gradient(72% 84% at 28% 42%, #000 0%, transparent 76%); /* taste-skill-ignore 让网格边缘淡出，避免硬切 */
+}
+.cta-meta {
+  position: absolute; right: clamp(16px, 3vw, 30px); bottom: clamp(14px, 2.4vw, 24px); z-index: 2;
+  font-family: var(--mono); /* taste-skill-ignore 同上：仪表标注 */
+  font-size: var(--t-small); letter-spacing: .14em; text-transform: uppercase;
+  color: var(--muted); opacity: .7;
 }
 .cta .glow {
   position: absolute; inset: -30% -10% auto -10%; height: 150%;
@@ -724,6 +758,19 @@ ul { margin: 0; padding: 0; list-style: none; }
           <svg aria-hidden="true"><use href="#lg-stepfun"></use></svg>
           <svg aria-hidden="true"><use href="#lg-wenxin"></use></svg>
         </div>
+        <div class="hero-readout" data-anim aria-hidden="true">
+          <span class="hero-readout-head">THROUGHPUT · 24H</span>
+          <svg viewBox="0 0 288 64" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <g class="ro-bar" stroke="var(--brand-teal)">
+              <path d="M6 54V38"/><path d="M22 54V30"/><path d="M38 54V44"/><path d="M54 54V24"/>
+            </g>
+            <g class="ro-bar" stroke="var(--brand-blue)">
+              <path d="M70 54V34"/><path d="M86 54V20"/><path d="M102 54V40"/><path d="M118 54V28"/>
+            </g>
+            <path d="M6 46l16-12 16 8 16-18 16 10 16-16 16 6 16-12 16 9 16-14 16 7 16-11 16 8 16-13 16 6" stroke="var(--accent)" opacity=".9"/>
+            <circle cx="278" cy="13" r="3" fill="var(--brand-coral)" stroke="none"/>
+          </svg>
+        </div>
       </div>
 
       <div class="hero-art" data-anim>
@@ -880,6 +927,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   <section class="wrap">
     <div class="cta" data-anim>
       <span class="glow" aria-hidden="true"></span>
+      <span class="cta-meta" aria-hidden="true">SYSTEM · READY</span>
       <div class="cta-inner">
         <h2>先把一次调用跑通</h2>
         <span class="fancy-wrap fancy-wrap-on-dark">
@@ -909,7 +957,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 02:01</span>
+      <span class="foot-stamp">预览版 2026-10-17 02:05</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
