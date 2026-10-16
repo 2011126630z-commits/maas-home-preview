@@ -1,0 +1,22 @@
+/*
+ * 本地视觉校验用的样式入口（不参与交付）。
+ * shadcn/ui 的设计令牌在这里按"深色主色 + 白底"给一组值，
+ * 组件只引用 bg-background / bg-primary / text-primary-foreground / border 这些语义名。
+ */
+@import "tailwindcss";
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #141017;
+  --color-primary: #141017;
+  --color-primary-foreground: #ffffff;
+  --color-muted-foreground: #5d5763;
+  --color-border: rgba(20, 16, 23, 0.14);
+}
+
+body {
+  margin: 0;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: Inter, ui-sans-serif, system-ui, "Segoe UI", "Microsoft YaHei", sans-serif;
+}
