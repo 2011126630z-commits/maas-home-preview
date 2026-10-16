@@ -45,7 +45,7 @@ function scriptBlock(html) {
 /**
  * 去掉不构成请求的内容再扫外链：
  *  - <pre>/<code> 里的示例文本（那是展示内容，不是加载）
- *  - LAND 区的 base64 掩码（base64 里会出现 // ，会被误判成协议相对地址）
+ *  - 所有 base64 data URI（base64 里会出现 // ，会被误判成协议相对地址）
  * src/href/@import 等真正的加载面仍然照查。
  */
 function withoutCodeSamples(html) {
@@ -53,6 +53,7 @@ function withoutCodeSamples(html) {
     .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, '<pre></pre>')
     .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, '<code></code>')
     .replace(/\/\* LAND:BEGIN \*\/[\s\S]*?\/\* LAND:END \*\//g, '/* LAND */')
+    .replace(/data:[a-z0-9.+-]+\/[a-z0-9.+-]+;base64,[A-Za-z0-9+/=\s]+/gi, 'data:inline')
 }
 
 function collectExternalUrls(html) {
@@ -271,10 +272,16 @@ test('结构合法：标签闭合且 id 唯一', () => {
   assert.deepEqual(duplicates, [], `id 重复：${[...new Set(duplicates)].join(', ')}`)
 })
 
-test('不引用第三方素材：不加载远程 logo、字体或图片', () => {
-  assert.doesNotMatch(raw, /<img\b/i, '不应使用 img 远程素材（图标已内联为 SVG）')
+test('图片只允许内联，不引第三方素材或远程字体', () => {
+  // 品牌 logo 现在是内联的 data URI（单文件、断网可开），不允许换成外链
+  for (const value of collectAttributeValues(raw, 'src')) {
+    assert.ok(
+      value.startsWith('data:') || value === '',
+      `img 的 src 必须是内联 data URI：${value.slice(0, 60)}`
+    )
+  }
   assert.doesNotMatch(raw, /fonts\.googleapis|fonts\.gstatic/i, '不应加载远程字体')
-  assert.match(raw, /data:"?\s|data:/, '内联资源应使用 data: URI')
+  assert.match(raw, /<img[^>]+alt="君骄数智"/, '品牌图形标必须有 alt 文本')
 })
 
 test('不编造业务指标，也不留未标注的示例数值', () => {
