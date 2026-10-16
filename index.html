@@ -48,7 +48,9 @@
 
   --pill: 999px;
   --r-card: 26px;
-  --edge: clamp(18px, 5vw, 56px);
+  /* 一个栅格：1440 下内容左右缘落在 102 / 1338，与参考站标题左缘对齐 */
+  --maxw: 1320px;
+  --edge: clamp(20px, 2.92vw, 42px);
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -71,7 +73,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 :root { caret-color: var(--accent); accent-color: var(--ink); }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 6px; }
 
-.wrap { width: 100%; max-width: 1320px; margin: 0 auto; padding-inline: var(--edge); }
+.wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding-inline: var(--edge); }
 
 .skip-link {
   position: absolute; left: var(--edge); top: -70px; z-index: 90;
@@ -92,13 +94,17 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 /* ---------- 顶栏：滚动后变成玻璃胶囊 ---------- */
-.masthead { position: sticky; top: 0; z-index: 60; padding-block: 14px; }
+.masthead { position: sticky; top: 0; z-index: 60; padding-block: 8px; }
 .masthead-inner {
   display: flex; align-items: center; gap: 26px;
-  padding: 10px 14px 10px 18px; border-radius: var(--pill);
+  /* 负边距抵消胶囊内边距，让字标左缘与正文内容左缘落在同一条竖线上 */
+  margin-inline: -16px;
+  padding: 9px 16px;
+  border-radius: var(--pill);
   border: 1px solid transparent;
   transition: background-color .35s ease, border-color .35s ease, box-shadow .35s ease, backdrop-filter .35s ease;
 }
+.masthead .btn { min-height: 40px; padding: 9px 20px; }
 .masthead.is-stuck .masthead-inner {
   background: var(--glass);
   border-color: var(--glass-line);
@@ -154,7 +160,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a:hover { background: rgba(20, 16, 23, .05); }
 
 /* ---------- 首屏 ---------- */
-.hero { position: relative; overflow: clip; padding-block: clamp(10px, 2vw, 28px) clamp(40px, 6vw, 84px); }
+.hero { position: relative; overflow: clip; padding-block: clamp(36px, 4.1vw, 59px) clamp(40px, 6vw, 84px); }
 .hero-grid {
   position: relative; z-index: 4;
   display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
@@ -725,8 +731,8 @@ document.documentElement.classList.add('js');
 
     function gDraw() {
       gctx.clearRect(0, 0, gw, gh);
-      var cx = gw / 2, cy = gh * 0.36;
-      var radius = Math.min(gw, gh) * 0.33;
+      var cx = gw / 2, cy = gh * 0.44;
+      var radius = Math.min(gw, gh) * 0.38;
       var cosA = Math.cos(gspin), sinA = Math.sin(gspin);
       var buckets = [[], [], [], []];
       var i, x, y, z, X, Y, Z, ty, tz, depth, bucket;
