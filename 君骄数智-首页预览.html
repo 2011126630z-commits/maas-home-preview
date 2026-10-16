@@ -541,9 +541,23 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
 .cap-icon svg { width: 24px; height: 24px; }
 /* 标题与说明共用第 2~3 列：左缘天然对齐，中间那条空白带也就没了 */
 .cap h3 { grid-column: 2 / span 2; grid-row: 1; font-size: var(--t-title); line-height: 1.04; }
-.cap p { grid-column: 2 / span 2; grid-row: 2; font-size: var(--t-lead); color: var(--muted); }
+.cap p { grid-column: 2 / span 2; grid-row: 3; font-size: var(--t-lead); color: var(--muted); }
+/* 标语：中文为主 + 英文作注（客户定的形式）。
+   必须用 p.cap-slogan 而不是 .cap-slogan：.cap p 的特异性更高，
+   否则标语的 grid-row 会被说明行覆盖，两个 p 落进同一行叠字（踩过一次）。 */
+.cap p.cap-slogan {
+  grid-column: 2 / span 2; grid-row: 2;
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px;
+  font-size: var(--t-lead); font-weight: 700; color: var(--ink); letter-spacing: -.01em;
+  margin-bottom: 6px;
+}
+.cap p.cap-slogan .en {
+  font-family: var(--mono); /* taste-skill-ignore 英文作注，客户点名要的仪表感 */
+  font-size: var(--t-small); font-weight: 400; letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); opacity: .85;
+}
 /* 客户反馈「这一块的字太少了」：每条补两条要点 + 一个详情入口 */
-.cap-list { grid-column: 2 / span 2; grid-row: 3; display: grid; gap: 6px; margin-top: 12px; }
+.cap-list { grid-column: 2 / span 2; grid-row: 4; display: grid; gap: 6px; margin-top: 12px; }
 .cap-list li {
   position: relative; padding-left: 16px;
   font-size: var(--t-body); color: var(--muted);
@@ -553,7 +567,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
   width: 6px; height: 6px; border-radius: 50%; background: var(--cap-col); opacity: .85;
 }
 .cap-more {
-  grid-column: 2 / span 2; grid-row: 4; justify-self: start;
+  grid-column: 2 / span 2; grid-row: 5; justify-self: start;
   margin-top: 14px; display: inline-flex; align-items: center; gap: 6px;
   font-size: var(--t-small); font-weight: 600; color: var(--ink);
   padding: 8px 16px; border: 1px solid var(--line); border-radius: var(--pill);
@@ -562,7 +576,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
 .cap-more:hover { background: var(--fill); border-color: rgba(20, 16, 23, .22); transform: translateY(-1px); }
 .cap-more .arrow { transition: transform .22s cubic-bezier(.16, 1, .3, 1); }
 .cap-more:hover .arrow { transform: translateX(3px); }
-.cap-icon, .cap-art { grid-row: 1 / span 4; }
+.cap-icon, .cap-art { grid-row: 1 / span 5; }
 /* 右侧示意图（内联 SVG，仍是零外部请求） */
 .cap-art {
   grid-column: 4; grid-row: 1 / span 2; align-self: center;
@@ -673,7 +687,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
   .glass { top: auto; bottom: clamp(12px, 3vw, 22px); }
   /* 能力条目：窄屏改成图标 + 标题在上、说明在下；示意图隐藏（手机上一屏太挤） */
   .cap { grid-template-columns: 46px minmax(0, 1fr); gap: 8px 14px; }
-  .cap h3, .cap p, .cap-list, .cap-more { grid-column: 2; }
+  .cap h3, .cap p, .cap-slogan, .cap-list, .cap-more { grid-column: 2; }
   .cap-art { display: none; }
 }
 @media (max-width: 760px) {
@@ -877,6 +891,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h4l5 7"/><path d="M3 12h9"/><path d="M3 19h4l5-7"/><path d="M13 12h8"/></svg>
         </span>
         <h3>统一接入</h3>
+        <p class="cap-slogan">一套协议，接上所有大模型<span class="en">ONE PROTOCOL · EVERY MODEL</span></p>
         <p>一套 OpenAI 兼容协议，现有 SDK 改一行 Base URL 就能接上。</p>
         <ul class="cap-list">
           <li>兼容 OpenAI、Anthropic、Gemini 三种请求格式</li>
@@ -901,6 +916,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4"/><circle cx="9" cy="12" r="2"/><path d="M11 12h3c1.5 0 2-1 2.6-2.2S18 7 19.5 7H21"/><path d="M11 12h3c1.5 0 2 1 2.6 2.2S18 17 19.5 17H21"/></svg>
         </span>
         <h3>多渠道调度</h3>
+        <p class="cap-slogan">上游抖动，链路自己换<span class="en">REROUTE BEFORE IT BREAKS</span></p>
         <p>上游抖动时自动换道重试，每次切换都写进调用记录。</p>
         <ul class="cap-list">
           <li>同一模型可挂多条上游，按权重与优先级分流</li>
@@ -928,6 +944,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V11"/><path d="M11 21V4"/><path d="M16 21v-6"/><path d="M21 21v-9"/></svg>
         </span>
         <h3>用量透明</h3>
+        <p class="cap-slogan">每一次调用都算得清<span class="en">EVERY CALL ACCOUNTED FOR</span></p>
         <p>模型、渠道、令牌数、耗时逐条可查，账单能直接核对。</p>
         <ul class="cap-list">
           <li>按令牌、模型、渠道、时间四个维度汇总</li>
@@ -953,6 +970,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg>
         </span>
         <h3>密钥可控</h3>
+        <p class="cap-slogan">权限跟着项目走<span class="en">SCOPE FOLLOWS THE PROJECT</span></p>
         <p>令牌按项目分级授权，配额与限流都挂在令牌上。</p>
         <ul class="cap-list">
           <li>令牌可设额度、过期时间与可用模型</li>
@@ -1009,7 +1027,7 @@ body > *:not(.globe-bg) { position: relative; z-index: 1; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 02:58</span>
+      <span class="foot-stamp">预览版 2026-10-17 03:07</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
