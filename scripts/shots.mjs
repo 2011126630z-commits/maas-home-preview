@@ -3,7 +3,7 @@
  *   npm run shots
  */
 import { spawnSync } from 'node:child_process'
-import { existsSync, mkdirSync, readFileSync, rmSync, statSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join } from 'node:path'
 import { tmpdir } from 'node:os'
@@ -21,14 +21,18 @@ const EDGE_CANDIDATES = [
 ]
 
 /**
- * 高度说明：full 系列的高度是本页当前真实内容高度（1440→5108、768→5337、390→5370 实测），
+ * 高度说明：full 系列的高度是本页当前真实内容高度（1440→1919、768→1776、390→1725 实测），
  * 改版后如内容变长，需重新实测并更新，避免长图被截断。
+ *
+ * emulate: true —— Windows 下无头浏览器开不出窄于 ~500px 的窗口，直接截图会把 500px 的
+ * 排版裁成 390px，看起来"右边被切掉"。所以把页面放进一个宽度精确等于目标宽度的 iframe 里
+ * 再截外层，等价于真实设备视口（媒体查询、100vw、position:fixed 都按 iframe 视口计算）。
  */
 const SHOTS = [
   { name: 'desktop-1440', width: 1440, height: 1000 },
-  { name: 'desktop-full-1440', width: 1440, height: 5150 },
-  { name: 'tablet-768', width: 768, height: 5380 },
-  { name: 'mobile-390', width: 390, height: 5400 },
+  { name: 'desktop-full-1440', width: 1440, height: 1960 },
+  { name: 'tablet-768', width: 768, height: 1810 },
+  { name: 'mobile-390', width: 390, height: 1760, emulate: true },
   { name: 'state-sent', width: 1440, height: 1000, query: '&demo=sent' },
 ]
 
@@ -59,6 +63,21 @@ const failures = []
 for (const shot of SHOTS) {
   const outFile = join(outDir, `${shot.name}.png`)
   const shotUrl = pageUrl + (shot.query ?? '')
+
+  // 窄视口：套一层精确宽度的 iframe，避免被 Windows 的最小窗口宽度带偏
+  let targetUrl = shotUrl
+  let frameFile = null
+  if (shot.emulate) {
+    frameFile = join(outDir, `.frame-${shot.name}.html`)
+    writeFileSync(
+      frameFile,
+      `<!doctype html><meta charset="utf-8"><style>html,body{margin:0;padding:0;background:#fff;overflow:hidden}
+       iframe{display:block;border:0;width:${shot.width}px;height:${shot.height}px}</style>
+       <iframe src="${shotUrl}" scrolling="no" title="${shot.name}"></iframe>`
+    )
+    targetUrl = pathToFileURL(frameFile).href
+  }
+
   const result = spawnSync(
     browser,
     [
@@ -71,11 +90,14 @@ for (const shot of SHOTS) {
       `--user-data-dir=${profileDir}`,
       `--window-size=${shot.width},${shot.height}`,
       '--virtual-time-budget=3000',
+      `--allow-file-access-from-files`,
       `--screenshot=${outFile}`,
-      shotUrl,
+      targetUrl,
     ],
     { stdio: 'pipe', encoding: 'utf8' }
   )
+
+  if (frameFile) rmSync(frameFile, { force: true })
 
   if (!existsSync(outFile)) {
     failures.push(`${shot.name}: 未生成截图（exit ${result.status}）`)
@@ -88,6 +110,7 @@ for (const shot of SHOTS) {
   const bytes = statSync(outFile).size
   console.log(
     `✓ ${shot.name.padEnd(18)} ${size ? `${size.width}x${size.height}` : '?'}` +
+      `${shot.emulate ? ' (真视口 emulation)' : ''}` +
       `  ${(bytes / 1024).toFixed(0)} KB  →  shots/${shot.name}.png`
   )
 }
