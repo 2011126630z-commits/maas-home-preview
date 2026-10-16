@@ -42,11 +42,17 @@ function scriptBlock(html) {
   return (html.match(/<script\b[^>]*>[\s\S]*?<\/script>/i) || [''])[0]
 }
 
-/** 去掉 <pre>/<code> 里的示例文本：那是展示内容，不构成请求，但 src/href/@import 仍会被查 */
+/**
+ * 去掉不构成请求的内容再扫外链：
+ *  - <pre>/<code> 里的示例文本（那是展示内容，不是加载）
+ *  - LAND 区的 base64 掩码（base64 里会出现 // ，会被误判成协议相对地址）
+ * src/href/@import 等真正的加载面仍然照查。
+ */
 function withoutCodeSamples(html) {
   return html
     .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, '<pre></pre>')
     .replace(/<code\b[^>]*>[\s\S]*?<\/code>/gi, '<code></code>')
+    .replace(/\/\* LAND:BEGIN \*\/[\s\S]*?\/\* LAND:END \*\//g, '/* LAND */')
 }
 
 function collectExternalUrls(html) {

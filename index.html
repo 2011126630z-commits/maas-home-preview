@@ -184,6 +184,8 @@ ul { margin: 0; padding: 0; list-style: none; }
   background: radial-gradient(62% 62% at 16% 20%, #ffb7d2 0%, rgba(255, 183, 210, 0) 66%), radial-gradient(56% 56% at 84% 10%, #ffd88a 0%, rgba(255, 216, 138, 0) 64%), radial-gradient(66% 66% at 80% 88%, #9fe3c8 0%, rgba(159, 227, 200, 0) 68%), radial-gradient(60% 60% at 10% 86%, #b9cbff 0%, rgba(185, 203, 255, 0) 68%), linear-gradient(142deg, #fff8fc 0%, #f5f7ff 100%); /* taste-skill-ignore 这张大图就是本页的主体视觉，渐变是内容不是装饰 */
   animation: facet-drift 26s ease-in-out infinite;
 }
+/* 旋转的地球：画在粉彩底之上，点位来自内联的陆地掩码，不挂任何贴图 */
+#globe { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 @keyframes facet-drift {
   50% { transform: rotate(-9deg) scale(1.05); }
 }
@@ -191,7 +193,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .glass {
   position: absolute; left: clamp(14px, 3vw, 26px);
   right: clamp(14px, 3vw, 26px);
-  top: clamp(300px, 34vw, 660px);
+  top: clamp(560px, 52vw, 780px);
   z-index: 5;
   padding: 16px 18px; border-radius: 20px;
   background: var(--glass); border: 1px solid var(--glass-line);
@@ -433,6 +435,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="hero-art" data-anim>
         <div class="art-frame" aria-hidden="true">
           <div class="facet"></div>
+          <canvas id="globe"></canvas>
         </div>
 
         <div class="glass" data-ui>
@@ -634,6 +637,136 @@ document.documentElement.classList.add('js');
     }, { rootMargin: '0px 0px -12% 0px', threshold: 0.12 });
     animItems.forEach(function (item) { observer.observe(item); });
     setTimeout(function () { if (!fired) revealAll(); }, 900);
+  }
+
+  /* ---------- 旋转的地球 ----------
+     陆地来自内联掩码（world-atlas / Natural Earth，见 scripts/build-land.py），
+     球面上按斐波那契分布撒点，只留落在陆地上的点，逐帧绕 Y 轴旋转后正交投影。 */
+  /* LAND:BEGIN */
+  var LAND_COLS = 180, LAND_ROWS = 90;
+  var LAND_B64 =
+    'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAf8AP/AAAAAAAAAAAAAAAAAAAAAAAA//////8AAAAAAAABAAAAAAAAAAAAAYf+H///4AB+AAAAAA8AAAAAAAAAAAwCz4f///wAAIAAAAAAGAAAAAAAAAAAHC/wAf//wAAAAADAAf/wAHAAAAAAAH4338AP//gAAAAAMAD///cDAAAgD0ACfw3/wH//gAAA4AMHf//////wAAP/7///9/4P//gAAAAAAiwAAAAAAAAL///////////////gANAAgAAAAAAAA3///////////////jh4AAAAAAAAAAAAP/////4A4B4AAAD5////////////+Af/////gHgA4AAAP5///////////PwAHgH///gH0AAAAAH4/////////+CMAADAB///4D+AAAAGCx/////////4A8AAAAA////n/gAAAODj/////////wA4AAAAAf///v/wAAAbv///////////AwAAAAAP/////wAAAH////////////AAAAAAAH////8YAAAB///////////9AAAAAAAD////8IAAAB///////////9AAAAAAAD////+AAAAB//7f///////xAAAAAAAD////gAAAAPxnwP///////jAAAAAAAD////AAAAAfif////////+CAAAAAAAD///+AAAAAfCDf//////+MCAAAAAAAB///8AAAAAOGRP///////mMAAAAAAAA///8AAAAAH+AA///////E8AAAAAAAAf//wAAAAAP/AB///////BgAAAAAAAAP//gAAAAAf/7////////gAAAAAAAAAH/AwAAAAAf////f/////gAAAAAAAAAF+AQAAAAB///+/v/////AAAAAAAAAAC+AAAAAAD/////0H////AAAAAAAAAAAeAwAAAAD////f/D///8gAAAAAAAAAAeGEAAAAD////v+B/z/QAAAAAAAAAAAPMFwAAAD////v+A/B+gAAAAAAAAAAAD8AAAAAD////n4AeB/AgAAAAAAAAAAAPAAAAAH////3gAcAfAgAAAAAAAAAAADAAAAAD////+AAcAfggAAAAAAAAAAABBwAAAD////9wAMATAYAAAAAAAAAAAA//AAAB/////gAKAQAYAAAAAAAAAAAAH/gAAA/////gACAIAYAAAAAAAAAAAAH/8AAAeH///AAAAsGAAAAAAAAAAAAAH/+AAAAB//+AAAAcOAAAAAAAAAAAAAP/+AAAAB//8AAAAcegAAAAAAAAAAAAP//gAAAD//4AAAAMeggAAAAAAAAAAAP//8AAAB//wAAAAGcg+AAAAAAAAAAAf///AAAA//wAAAACAAPkAAAAAAAAAAP///gAAA//wAAAABwAHwAAAAAAAAAAH///AAAA//wAAAAABICYAAAAAAAAAAH///AAAAf/wAAAAAAAAAAAAAAAAAAAD//+AAAA//wgAAAAABxAAAAAAAAAAAD//+AAAA//wgAAAAAPxgAAAAAAAAAAA//+AAAB//3gAAAAAf/wADAAAAAAAAAf/8AAAA//DgAAAAAf/wAAAAAAAAAAAf/8AAAAf/DAAAAAD//4CAAAAAAAAAAf/wAAAAf/DAAAAAH//8AAAAAAAAAAAf/AAAAAf+CAAAAAH//8AAAAAAAAAAAf/AAAAAP8AAAAAAH//+AAAAAAAAAAA/+AAAAAP8AAAAAAH//+AAAAAAAAAAA/+AAAAAH4AAAAAAD//+AAAAAAAAAAA/8AAAAAHwAAAAAADwf8AAAAAAAAAAA/wAAAAAAAAAAAAACAH4AAAAAAAAAAB/wAAAAAAAAAAAAAAAD4AEAAAAAAAAB+AAAAAAAAAAAAAAAAAAAGAAAAAAAAB+AAAAAAAAAAAAAAAAAQAMAAAAAAAAB8AAAAAAAAAAAAAAAAAQAYAAAAAAAAB4AAAAAAAAAAAAAAAAAAAwAAAAAAAAD4AAAAAAAAAAAAAAAAAAAAAAAAAAAADwAAAAAAAAAACAAAAAAAAAAAAAAAAADwAAAAAAAAAAAAAAAAAAAAAAAAAAAABwAAAAAAAAAAAAAAAAAAAAAAAAAAAAA4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAeAAYP+//gAAAAAAAAAAAMAAAAAAADP/+H//////AAAAAAAAAAA+AAAAAf////8////////gAAAAAAOEB/AAAD///////////////gAAAP//f//8AAAH//////////////+AABH//////AAAH///////////////8AAE//////4ABw////////////////8AAAD//////vDg////////////////4AAAf/////////////////////////+AAAPgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  /* LAND:END */
+
+  var globe = document.getElementById('globe');
+  if (globe && globe.getContext) {
+    var gctx = globe.getContext('2d');
+    var landBits = null;
+    (function decodeLand() {
+      var binary = atob(LAND_B64);
+      var total = LAND_COLS * LAND_ROWS;
+      landBits = new Uint8Array((total + 7) >> 3);
+      for (var i = 0; i < landBits.length; i++) landBits[i] = binary.charCodeAt(i) & 255;
+    })();
+
+    function isLand(lon, lat) {
+      var col = Math.floor(((lon + 180) / 360) * LAND_COLS);
+      var row = Math.floor(((90 - lat) / 180) * LAND_ROWS);
+      if (col < 0) col = 0; else if (col >= LAND_COLS) col = LAND_COLS - 1;
+      if (row < 0) row = 0; else if (row >= LAND_ROWS) row = LAND_ROWS - 1;
+      var i = row * LAND_COLS + col;
+      return (landBits[i >> 3] >> (7 - (i & 7))) & 1;
+    }
+
+    var TAU = Math.PI * 2;
+    var GOLDEN = Math.PI * (3 - Math.sqrt(5));
+    var dots = [];
+    (function buildDots() {
+      var count = 24000;
+      for (var i = 0; i < count; i++) {
+        var y = 1 - (i / (count - 1)) * 2;
+        var r = Math.sqrt(Math.max(0, 1 - y * y));
+        var theta = GOLDEN * i;
+        var x = Math.cos(theta) * r;
+        var z = Math.sin(theta) * r;
+        var lat = (Math.asin(y) * 180) / Math.PI;
+        var lon = (Math.atan2(z, x) * 180) / Math.PI;
+        if (isLand(lon, lat)) dots.push(x, y, z);
+      }
+    })();
+
+    var gw = 0, gh = 0, gdpr = 1, graf = null, gspin = 0, glast = 0, gink = '#141017';
+    var TILT = 0.34;
+    var cosT = Math.cos(TILT), sinT = Math.sin(TILT);
+    var ALPHA = [0.24, 0.4, 0.6, 0.84];
+    var RADIUS = [1.05, 1.3, 1.6, 2];
+
+    function gResize() {
+      var rect = globe.getBoundingClientRect();
+      gdpr = Math.min(window.devicePixelRatio || 1, 2);
+      gw = rect.width; gh = rect.height;
+      globe.width = Math.round(gw * gdpr);
+      globe.height = Math.round(gh * gdpr);
+      gctx.setTransform(gdpr, 0, 0, gdpr, 0, 0);
+      /* canvas 不认 CSS 变量，取一次算好的颜色字面量 */
+      gink = (window.getComputedStyle(globe).color || '').trim() || gink;
+    }
+
+    function gDraw() {
+      gctx.clearRect(0, 0, gw, gh);
+      var cx = gw / 2, cy = gh * 0.36;
+      var radius = Math.min(gw, gh) * 0.33;
+      var cosA = Math.cos(gspin), sinA = Math.sin(gspin);
+      var buckets = [[], [], [], []];
+      var i, x, y, z, X, Y, Z, ty, tz, depth, bucket;
+      for (i = 0; i < dots.length; i += 3) {
+        x = dots[i]; y = dots[i + 1]; z = dots[i + 2];
+        X = x * cosA + z * sinA;
+        Z = -x * sinA + z * cosA;
+        Y = y;
+        ty = Y * cosT - Z * sinT;
+        tz = Y * sinT + Z * cosT;
+        if (tz <= 0.03) continue;
+        depth = tz;
+        bucket = depth > 0.8 ? 3 : depth > 0.55 ? 2 : depth > 0.28 ? 1 : 0;
+        buckets[bucket].push(cx + X * radius, cy - ty * radius, RADIUS[bucket]);
+      }
+      gctx.fillStyle = gink;
+      for (i = 0; i < 4; i++) {
+        gctx.globalAlpha = ALPHA[i];
+        gctx.beginPath();
+        for (var j = 0; j < buckets[i].length; j += 3) {
+          gctx.moveTo(buckets[i][j] + buckets[i][j + 2], buckets[i][j + 1]);
+          gctx.arc(buckets[i][j], buckets[i][j + 1], buckets[i][j + 2], 0, TAU);
+        }
+        gctx.fill();
+      }
+      gctx.globalAlpha = 1;
+    }
+
+    var globeReduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    function gFrame(now) {
+      var dt = glast ? Math.min((now - glast) / 1000, 0.05) : 0;
+      glast = now;
+      gspin = (gspin + dt * 0.12) % TAU;
+      gDraw();
+      graf = requestAnimationFrame(gFrame);
+    }
+
+    gResize();
+    if (globeReduce || STATIC) {
+      gspin = 2.4;
+      gDraw();
+    } else {
+      graf = requestAnimationFrame(gFrame);
+    }
+    if (window.location.search.indexOf('debug=globe') !== -1) {
+      var landCells = 0;
+      for (var lc = 0; lc < LAND_COLS * LAND_ROWS; lc++) {
+        if ((landBits[lc >> 3] >> (7 - (lc & 7))) & 1) landCells++;
+      }
+      document.title = 'DOTS=' + dots.length / 3 + ' 掩码陆地=' + landCells +
+        ' 画布=' + Math.round(gw) + 'x' + Math.round(gh);
+    }
+    window.addEventListener('resize', function () { gResize(); gDraw(); }, { passive: true });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (graf) { cancelAnimationFrame(graf); graf = null; }
+      } else if (!graf && !(globeReduce || STATIC)) {
+        glast = 0;
+        graf = requestAnimationFrame(gFrame);
+      }
+    });
   }
 
   /* ---------- 花瓣粒子：Canvas 画，不用外部素材 ---------- */
