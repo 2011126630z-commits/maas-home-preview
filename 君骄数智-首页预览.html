@@ -324,13 +324,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: var(--fill); }
 
-/* ---------- 整页常驻的品牌图形：元素取自品牌图标本身 ----------
+/* ---------- 首屏右侧品牌图形：元素取自品牌图标本身 ----------
    青 → 深蓝的渐变 + 粗圆角笔画，做成两条交叉的笔画。
    这是客户选定的形态（圆球、多边形色体都已被否掉，别再改回去）。
-   固定铺满视口、压在正文之下，滚动时一直可见。 */
-/* z-index:-1 把图形压到所有在流内容之下 —— 绝不能改顶层元素的 position，
-   顶栏是 position:sticky，被改成 relative 就不吸顶了（踩过） */
-.brand-shape { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: .62; filter: saturate(1.12); }
+   只在首屏，随首屏一起滚走 —— 客户明确不要常驻。
+   注意 .art-frame 向右出血 16vw，这里必须用同样的量收回来，否则图形会被摆到视口外。 */
+.brand-shape { position: absolute; inset: 0 16vw 0 0; z-index: 0; pointer-events: none; opacity: .72; filter: saturate(1.12); }
+@media (max-width: 1040px) { .brand-shape { inset: 0; } }
 
 .bs-bar {
   position: absolute; display: block;
@@ -339,7 +339,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* 主笔画：青 → 品牌蓝 → 深蓝，就是图标自身的梯度 */
 .bs-bar-a {
-  left: 54%; top: 26%; width: min(27%, 400px);
+  left: 60%; top: 24%; width: min(31%, 430px);
   transform: rotate(-19deg);
   animation: bs-drift-a 9s ease-in-out infinite;
   background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* taste-skill-ignore 取自品牌图标自身的渐变，客户指定的形态 */
@@ -347,7 +347,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* 副笔画：与主笔画交叉，呼应图标里那两笔的结构 */
 .bs-bar-b {
-  left: 62%; top: 52%; width: min(23%, 340px);
+  left: 68%; top: 52%; width: min(26%, 370px);
   transform: rotate(23deg);
   animation: bs-drift-b 12s ease-in-out infinite;
   background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* taste-skill-ignore 同上，同一套品牌梯度 */
@@ -355,7 +355,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 /* 一层气晕，让图形有体积而不是两条色带 */
 .bs-glow {
-  position: absolute; left: 52%; top: 16%; width: min(30%, 430px); aspect-ratio: 1;
+  position: absolute; left: 58%; top: 12%; width: min(34%, 470px); aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .2) 0%, rgba(34, 167, 232, .06) 46%, rgba(34, 167, 232, 0) 72%); /* taste-skill-ignore 图形外围的气晕 */
   animation: bs-pulse 13s ease-in-out infinite;
@@ -519,8 +519,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 /* ---------- 已接入模型：一排转动的品牌标记，名字在各自下方 ---------- */
 .models { padding-block: clamp(40px, 6vw, 86px);
-  /* 半透明：品牌环境层整页常驻，不透明的带会把它挡住 */
-  background: rgba(246, 248, 255, .72); }
+  background: var(--surface); }
 .models-head {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
   margin-bottom: clamp(24px, 3.4vw, 40px);
@@ -787,13 +786,6 @@ ul { margin: 0; padding: 0; list-style: none; }
 </style>
 </head>
 <body>
-<!-- 整页常驻的品牌环境层：元素取自品牌图标本身（青→深蓝渐变 + 粗圆角笔画）。
-     固定铺满视口、压在正文之下，滚动时缓慢位移旋转 —— 参考站那种"滑过也还在"的效果。 -->
-<div class="brand-shape" aria-hidden="true">
-  <span class="bs-glow"></span>
-  <span class="bs-bar bs-bar-a"></span>
-  <span class="bs-bar bs-bar-b"></span>
-</div>
 
 <a class="skip-link" href="#main">跳到主要内容</a>
 
@@ -902,7 +894,15 @@ ul { margin: 0; padding: 0; list-style: none; }
       </div>
 
       <div class="hero-art" data-anim>
-        <div class="art-frame" aria-hidden="true"></div>
+        <div class="art-frame" aria-hidden="true">
+          <!-- 右侧视觉：取自品牌图标本身的元素 —— 老板的标是「青→深蓝渐变 + 粗圆角笔画」，
+               两条笔画交叉成抽象结构。只在首屏，随首屏一起滚走（客户要求不常驻）。 -->
+          <div class="brand-shape" aria-hidden="true">
+            <span class="bs-glow"></span>
+            <span class="bs-bar bs-bar-a"></span>
+            <span class="bs-bar bs-bar-b"></span>
+          </div>
+        </div>
 
         <div class="glass" data-ui>
           <p class="glass-head" aria-hidden="true">GATEWAY · LIVE · RAW 01 / 03</p>
@@ -1114,7 +1114,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 04:52</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:57</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
