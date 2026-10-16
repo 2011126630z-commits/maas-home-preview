@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>MOBILE-AUDIT=PENDING</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #fff; }
+  iframe { display: block; border: 0; }
+</style>
+</head>
+<body>
+<!--
+  移动端审计探针：把目标页放进精确宽度的 iframe，读取真实布局指标。
+  file:// 下需要 --allow-file-access-from-files 才能跨 frame 读 DOM。
+  用法：audit.html?w=390&src=<encoded url>
+-->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var params = new URLSearchParams(location.search);
+  var width = Number(params.get('w') || 390);
+  var src = params.get('src') || '';
+  var probeHeight = Number(params.get('h') || 900);
+  var frame = document.getElementById('frame');
+  frame.style.width = width + 'px';
+  frame.style.height = probeHeight + 'px';
+  frame.src = src;
+
+  function audit() {
+    var out = [];
+    try {
+      var win = frame.contentWindow;
+      var doc = win.document;
+      var vw = doc.documentElement.clientWidth;
+      var sw = doc.documentElement.scrollWidth;
+
+      out.push('VW=' + vw);
+      out.push('SCROLLW=' + sw);
+      out.push('OVERFLOW=' + Math.max(0, sw - vw));
+
+      // 找出右缘超出视口的元素（跳过被裁切容器里的，比如跑马灯轨道，那是设计如此）
+      function insideClipper(el) {
+        var node = el.parentElement;
+        while (node && node !== doc.body) {
+          var ov = win.getComputedStyle(node).overflowX;
+          if (ov === 'hidden' || ov === 'clip' || ov === 'auto' || ov === 'scroll') return true;
+          node = node.parentElement;
+        }
+        return false;
+      }
+
+      var offenders = [];
+      var all = doc.querySelectorAll('body *');
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        var r = el.getBoundingClientRect();
+        if (r.width < 8 || r.height < 8) continue;
+        var over = Math.round(r.right - vw);
+        if (over > 2 && !insideClipper(el)) {
+          var tag = el.tagName.toLowerCase();
+          var cls = (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.');
+          offenders.push(tag + (cls ? '.' + cls : '') + ':+' + over);
+        }
+      }
+      offenders = offenders.slice(0, 8);
+      out.push('OFFENDERS=' + (offenders.length ? offenders.join(', ') : 'none'));
+
+      // 触摸目标：低于 24px 才算问题（WCAG 2.2 SC 2.5.8 的最小值；Apple/Google 建议 44）
+      var small = [];
+      var clickable = doc.querySelectorAll('a, button, summary, select, [data-demo]');
+      for (var j = 0; j < clickable.length; j++) {
+        var el2 = clickable[j];
+        var r2 = el2.getBoundingClientRect();
+        if (r2.width === 0 && r2.height === 0) continue;
+        if (r2.height < 24) {
+          var t = (el2.textContent || '').trim().slice(0, 10) || el2.tagName.toLowerCase();
+          small.push(t + ':' + Math.round(r2.height));
+        }
+      }
+      out.push('SMALL_TARGETS=' + (small.length ? small.slice(0, 8).join(', ') : 'none'));
+
+      // 字号过小的正文
+      var tiny = [];
+      var texts = doc.querySelectorAll('p, span, a, li');
+      var seen = {};
+      for (var k = 0; k < texts.length; k++) {
+        var el3 = texts[k];
+        if (!el3.textContent.trim()) continue;
+        var fs = parseFloat(win.getComputedStyle(el3).fontSize);
+        if (fs < 12 && !seen[fs]) { seen[fs] = 1; tiny.push(fs.toFixed(0)); }
+      }
+      out.push('TINY_TEXT=' + (tiny.length ? tiny.join(', ') : 'none'));
+    } catch (error) {
+      out.push('ERR=' + error.name + ':' + error.message);
+    }
+    document.title = 'MOBILE-AUDIT=' + out.join(' | ');
+  }
+
+  frame.addEventListener('load', function () { setTimeout(audit, 900); });
+  setTimeout(audit, 3200);
+})();
+</script>
+</body>
+</html>

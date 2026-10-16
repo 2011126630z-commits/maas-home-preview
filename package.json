@@ -7,6 +7,7 @@
   "scripts": {
     "test": "node --test \"test/**/*.mjs\"",
     "shots": "node scripts/shots.mjs",
+    "audit": "node scripts/audit-mobile.mjs",
     "fetch:logos": "node scripts/fetch-logos.mjs",
     "build:logos": "node scripts/build-logos.mjs",
     "fetch:land": "node scripts/fetch-land.mjs"
