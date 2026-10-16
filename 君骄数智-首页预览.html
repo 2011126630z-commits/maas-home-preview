@@ -302,6 +302,33 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: var(--fill); }
 
+/* ---------- 图标板球体（替代原来的粒子地球） ---------- */
+.orb-stage {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding-bottom: 10%;          /* 球心略上移，下方留给玻璃面板 */
+  perspective: 1400px;
+}
+.orb {
+  position: relative; width: 0; height: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(9deg);
+}
+.plate {
+  position: absolute; left: 0; top: 0;
+  width: clamp(44px, 4.6vw, 72px); aspect-ratio: 4 / 3;
+  margin-left: calc(clamp(44px, 4.6vw, 72px) / -2);
+  margin-top: calc(clamp(44px, 4.6vw, 72px) * 0.75 / -2);
+  border-radius: 11px;
+  background: rgba(255, 255, 255, .92);
+  border: 1px solid rgba(20, 16, 23, .07);
+  box-shadow: 0 10px 22px -14px rgba(30, 16, 40, .5); /* taste-skill-ignore 图标板的厚度感，客户要的球体效果 */
+  display: grid; place-items: center;
+  will-change: transform, opacity;
+}
+.plate svg { width: 46%; height: auto; }
+@media (prefers-reduced-motion: reduce) { .plate { will-change: auto; } }
+
 /* ---------- 首屏 ---------- */
 .hero { position: relative; overflow: clip; padding-block: clamp(36px, 4.1vw, 59px) clamp(40px, 6vw, 84px); }
 .hero-grid {
@@ -807,7 +834,48 @@ ul { margin: 0; padding: 0; list-style: none; }
 
       <div class="hero-art" data-anim>
         <div class="art-frame" aria-hidden="true">
-          <canvas id="globe"></canvas>
+          <!-- 图标板球体：36 块圆角板按斐波那契球面均匀分布，每块放一个模型图标。
+               纯 CSS 3D（preserve-3d + perspective），无 canvas、无粒子、无新增体积。 -->
+          <div class="orb-stage">
+            <div class="orb" id="orb">
+            <span class="plate" data-lon="0.0" data-lat="90.0"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg></span>
+            <span class="plate" data-lon="137.5" data-lat="70.5"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg></span>
+            <span class="plate" data-lon="275.0" data-lat="62.3"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg></span>
+            <span class="plate" data-lon="52.5" data-lat="56.0"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg></span>
+            <span class="plate" data-lon="190.0" data-lat="50.5"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg></span>
+            <span class="plate" data-lon="327.5" data-lat="45.6"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg></span>
+            <span class="plate" data-lon="105.0" data-lat="41.1"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg></span>
+            <span class="plate" data-lon="242.6" data-lat="36.9"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg></span>
+            <span class="plate" data-lon="20.1" data-lat="32.9"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg></span>
+            <span class="plate" data-lon="157.6" data-lat="29.1"><svg aria-hidden="true"><use href="#lg-claude"></use></svg></span>
+            <span class="plate" data-lon="295.1" data-lat="25.4"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg></span>
+            <span class="plate" data-lon="72.6" data-lat="21.8"><svg aria-hidden="true"><use href="#lg-openai"></use></svg></span>
+            <span class="plate" data-lon="210.1" data-lat="18.3"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg></span>
+            <span class="plate" data-lon="347.6" data-lat="14.9"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg></span>
+            <span class="plate" data-lon="125.1" data-lat="11.5"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg></span>
+            <span class="plate" data-lon="262.6" data-lat="8.2"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg></span>
+            <span class="plate" data-lon="40.1" data-lat="4.9"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg></span>
+            <span class="plate" data-lon="177.6" data-lat="1.6"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg></span>
+            <span class="plate" data-lon="315.1" data-lat="-1.6"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg></span>
+            <span class="plate" data-lon="92.6" data-lat="-4.9"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg></span>
+            <span class="plate" data-lon="230.2" data-lat="-8.2"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg></span>
+            <span class="plate" data-lon="7.7" data-lat="-11.5"><svg aria-hidden="true"><use href="#lg-claude"></use></svg></span>
+            <span class="plate" data-lon="145.2" data-lat="-14.9"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg></span>
+            <span class="plate" data-lon="282.7" data-lat="-18.3"><svg aria-hidden="true"><use href="#lg-openai"></use></svg></span>
+            <span class="plate" data-lon="60.2" data-lat="-21.8"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg></span>
+            <span class="plate" data-lon="197.7" data-lat="-25.4"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg></span>
+            <span class="plate" data-lon="335.2" data-lat="-29.1"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg></span>
+            <span class="plate" data-lon="112.7" data-lat="-32.9"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg></span>
+            <span class="plate" data-lon="250.2" data-lat="-36.9"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg></span>
+            <span class="plate" data-lon="27.7" data-lat="-41.1"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg></span>
+            <span class="plate" data-lon="165.2" data-lat="-45.6"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg></span>
+            <span class="plate" data-lon="302.7" data-lat="-50.5"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg></span>
+            <span class="plate" data-lon="80.2" data-lat="-56.0"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg></span>
+            <span class="plate" data-lon="217.8" data-lat="-62.3"><svg aria-hidden="true"><use href="#lg-claude"></use></svg></span>
+            <span class="plate" data-lon="355.3" data-lat="-70.5"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg></span>
+            <span class="plate" data-lon="132.8" data-lat="-90.0"><svg aria-hidden="true"><use href="#lg-openai"></use></svg></span>
+            </div>
+          </div>
           <p class="globe-hint">点一下地球</p>
         </div>
 
@@ -1021,7 +1089,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 03:58</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:02</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -1052,6 +1120,67 @@ document.documentElement.classList.add('js');
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toastEl.setAttribute('data-show', 'false'); }, 2400);
   }
+  /* ---------- 图标板球体：自转 + 按法线朝向调明暗（球感的关键） ---------- */
+  (function orbInit() {
+    var orb = document.getElementById('orb');
+    if (!orb) return;
+    var plates = [].slice.call(orb.querySelectorAll('.plate'));
+    if (!plates.length) return;
+    var D = Math.PI / 180;
+    var R = 200, spin = 26, last = 0, raf = null, visible = true;
+
+    function place() {
+      for (var i = 0; i < plates.length; i++) {
+        var el = plates[i];
+        var lon = parseFloat(el.getAttribute('data-lon'));
+        var lat = parseFloat(el.getAttribute('data-lat'));
+        var a = lon + spin;
+        el.style.transform = 'rotateY(' + a + 'deg) rotateX(' + (-lat) + 'deg) translateZ(' + R + 'px)';
+        /* 法线的 z 分量：cos(lat)·cos(lon+spin)，1 正对观众、-1 背对 */
+        var depth = Math.cos(lat * D) * Math.cos(a * D);
+        var t = (depth + 1) / 2;                    /* 0..1 */
+        el.style.opacity = (0.16 + 0.84 * t).toFixed(3);
+        el.style.filter = 'brightness(' + (0.72 + 0.28 * t).toFixed(3) + ')';
+      }
+    }
+
+    function resize() {
+      var stage = orb.parentElement.getBoundingClientRect();
+      R = Math.max(90, Math.min(stage.width, stage.height) * 0.3);
+      place();
+    }
+
+    function frame(now) {
+      if (!visible || document.hidden) { raf = null; return; }
+      var dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
+      last = now;
+      spin = (spin + dt * 8) % 360;                 /* 约 45 秒一圈 */
+      place();
+      raf = requestAnimationFrame(frame);
+    }
+
+    function start() {
+      if (raf || STATIC || REDUCED || !visible || document.hidden) return;
+      last = 0;
+      raf = requestAnimationFrame(frame);
+    }
+    function stop() { if (raf) { cancelAnimationFrame(raf); raf = null; } }
+
+    resize();
+    place();
+    start();
+    window.addEventListener('resize', function () { resize(); }, { passive: true });
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) stop(); else start();
+    });
+    if (window.IntersectionObserver) {
+      new IntersectionObserver(function (en) {
+        visible = en[0].isIntersecting;
+        if (visible) start(); else stop();
+      }, { threshold: 0 }).observe(orb);
+    }
+  })();
+
   /* ---------- 手机菜单：开合都要有过渡 ---------- */
   var menuEl = document.querySelector('.menu');
   var closeMenuTimer = null;
