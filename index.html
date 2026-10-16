@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#ffffff" />
+<title>君骄数智 · 企业级 AI 模型统一接入平台</title>
+<meta name="description" content="君骄数智把多家模型供应商收敛成一个 OpenAI 兼容接口，统一鉴权、统一计量、统一排查。" />
+<meta name="robots" content="noindex" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2317171c'/%3E%3Ctext x='16' y='22' font-family='sans-serif' font-size='17' fill='%23ffffff' text-anchor='middle'%3E%E5%90%9B%3C/text%3E%3C/svg%3E" />
+
+<!--
+  ============================================================================
+  君骄数智 · 首页预览（单文件，零外部请求）
+
+  品牌配置区（换名换色只改这里，改完保存刷新，无需构建）
+    1) 站名「君骄数智」共 3 处：<title>、顶栏字标、页脚大字
+    2) 标语：h1 与紧随其后的那句话
+    3) 主色：下方 :root 的 --ink / --field / --accent / --mark
+
+  视觉语言来自项目根目录 DESIGN.md（企业 AI 控制台：白底、全墨正文、整块深色场、
+  平的面、极紧的大字）。改动本页前先读 DESIGN.md，并跑 design-taste-frontend 的
+  lint.mjs / inspect.mjs 关卡。
+
+  尺寸只用五档（--t-display / --t-title / --t-lead / --t-body / --t-small），
+  不要临时引入第六个字号；正文用 --ink，--slate 只留给次级说明。
+
+  合规提示（请勿删除）：
+  页脚保留了 AGPLv3 第 7 条附加条款要求的署名句子
+  「Frontend design and development by New API contributors.」
+  以及指向原项目 https://github.com/QuantumNous/new-api 的可见链接。
+  ============================================================================
+-->
+
+<style>
+/* ---------- 令牌：色与字，全部来自 DESIGN.md ---------- */
+:root {
+  --canvas: #ffffff;
+  --stone: #f2f3f5;         /* 冷调骨白，不是黄奶油 */
+  --pale: #f1f5ff;
+  --ink: #212121;           /* 正文用全墨 */
+  --near-black: #17171c;
+  --field: #003c33;         /* 深墨绿：整块色场 */
+  --on-field: #ffffff;
+  --accent: #1863dc;
+  --mark: #ff7759;
+  --slate: #5b5b68;         /* 仅次级说明，≥4.5:1 */
+  --hairline: #d9d9dd;
+  --error: #b30000;
+
+  --sans: Inter, ui-sans-serif, system-ui, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  --mono: ui-monospace, SFMono-Regular, 'Cascadia Mono', Menlo, Consolas, monospace; /* taste-skill-ignore 仅供 <pre> 里的真实请求与代码使用 */
+
+  /* 全站只有五个字号 */
+  --t-display: clamp(2.4rem, 6vw, 5rem);
+  --t-title: clamp(1.6rem, 3.2vw, 2.4rem);
+  --t-lead: 1.0625rem;
+  --t-body: 1rem;
+  --t-small: 0.8125rem;
+
+  --r-xs: 4px;
+  --r-sm: 8px;
+  --r-media: 22px;
+  --r-pill: 999px;
+
+  --edge: clamp(16px, 4vw, 32px);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3 { margin: 0; font-weight: 500; letter-spacing: -.02em; }
+p { margin: 0; }
+a { color: inherit; text-decoration: none; }
+
+/* 浏览器自带的那几处也属于设计系统 */
+::selection { background: var(--near-black); color: var(--canvas); }
+:root { caret-color: var(--accent); accent-color: var(--near-black); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+
+.wrap { width: 100%; max-width: 1280px; margin: 0 auto; padding-inline: var(--edge); }
+
+.skip-link {
+  position: absolute; left: var(--edge); top: -64px; z-index: 50;
+  background: var(--near-black); color: var(--on-field);
+  padding: 10px 18px; border-radius: var(--r-pill); transition: top .18s ease;
+}
+.skip-link:focus { top: 14px; }
+
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* ---------- 动作 ---------- */
+.action {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 46px; padding: 12px 26px;
+  border: 0; border-radius: var(--r-pill);
+  background: var(--near-black); color: var(--on-field);
+  font: inherit; font-size: var(--t-body); font-weight: 500;
+  cursor: pointer;
+  transition: transform .18s ease, background-color .18s ease;
+}
+.action:hover { background: #000; transform: translateY(-1px); }
+.action:active { transform: translateY(0); }
+.action.on-field { background: var(--canvas); color: var(--near-black); }
+.action.on-field:hover { background: var(--stone); }
+
+.action-quiet {
+  display: inline-flex; align-items: center; min-height: 46px;
+  padding: 12px 2px; border: 0; background: none; cursor: pointer;
+  font: inherit; font-size: var(--t-body); color: var(--ink);
+  text-decoration: underline; text-underline-offset: 5px;
+  text-decoration-thickness: 1px; text-decoration-color: var(--slate);
+  transition: text-decoration-color .18s ease;
+}
+.action-quiet:hover { text-decoration-color: var(--ink); }
+.action-quiet.on-field { color: var(--on-field); text-decoration-color: rgba(255,255,255,.6); }
+.action-quiet.on-field:hover { text-decoration-color: #fff; }
+
+/* ---------- 顶栏：一条素带，无玻璃、无分隔线 ---------- */
+.masthead { padding-block: 22px; }
+.masthead-inner { display: flex; align-items: center; gap: 28px; }
+
+.wordmark { display: inline-flex; align-items: center; gap: 11px; }
+.mark {
+  width: 30px; height: 30px; border-radius: var(--r-sm); flex: none;
+  background: var(--near-black); color: var(--on-field);
+  display: grid; place-items: center; font-size: var(--t-body); font-weight: 600;
+}
+.wordmark b { font-size: var(--t-lead); font-weight: 600; }
+
+.nav { display: flex; align-items: center; gap: 26px; margin-inline-start: 18px; }
+.nav a { font-size: var(--t-body); color: var(--ink); transition: color .16s ease; }
+.nav a:hover { color: var(--near-black); text-decoration: underline; text-underline-offset: 5px; }
+
+.masthead .action { margin-inline-start: auto; }
+
+/* 移动端菜单用原生 details，无脚本也能开合 */
+.menu { display: none; margin-inline-start: auto; position: relative; }
+.menu summary {
+  list-style: none; cursor: pointer; padding: 10px 4px;
+  font-size: var(--t-body); color: var(--ink);
+}
+.menu summary::-webkit-details-marker { display: none; }
+.menu summary::after { content: '菜单'; }
+.menu[open] summary::after { content: '收起'; }
+.menu ul {
+  list-style: none; margin: 0; padding: 18px 22px;
+  display: grid; gap: 16px; background: var(--stone);
+  border-radius: var(--r-sm); position: absolute; right: 0; top: 100%; min-width: 12rem;
+}
+.menu a { display: block; font-size: var(--t-lead); }
+
+/* ---------- 首屏：短标题 + 一句话 + 当场能用的片段 ---------- */
+.hero { padding-block: clamp(40px, 7vw, 88px) 0; }
+.hero h1 {
+  font-size: var(--t-display);
+  line-height: .98; letter-spacing: -.035em;
+  max-width: 18ch; text-wrap: balance;
+}
+/* 中文不按词断开：整体成组的短语用 nowrap，让断行发生在短语之间 */
+.hero h1 .nb { white-space: nowrap; }
+.hero .lede {
+  margin-top: 26px; max-width: 50ch;
+  font-size: var(--t-lead); line-height: 1.6; color: var(--ink);
+  text-wrap: pretty;
+}
+.hero-actions { margin-top: 34px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+
+/* ---------- 接入构造器：产品当场干活 ---------- */
+.console { margin-top: clamp(36px, 5vw, 60px); }
+
+.console-frame {
+  background: var(--stone);
+  border-radius: var(--r-media);
+  padding: clamp(18px, 2.6vw, 30px);
+}
+
+.console-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; }
+.console-bar h2 { font-size: var(--t-body); font-weight: 600; }
+.console-bar .note { font-size: var(--t-small); color: var(--slate); }
+
+.field { display: flex; align-items: center; gap: 10px; margin-inline-start: auto; }
+.field label { font-size: var(--t-small); color: var(--slate); }
+.field select {
+  font: inherit; font-size: var(--t-body); color: var(--ink);
+  background: var(--canvas); border: 1px solid var(--hairline);
+  border-radius: var(--r-xs); padding: 9px 12px; min-width: 15rem;
+}
+
+.console-grid {
+  margin-top: 20px;
+  display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+  gap: clamp(18px, 2.4vw, 30px); align-items: start;
+}
+
+.request {
+  background: var(--canvas); border-radius: var(--r-sm);
+  padding: 18px 20px; overflow-x: auto;
+}
+.request pre {
+  margin: 0; font-family: var(--mono); font-size: var(--t-small); line-height: 1.8;
+  color: var(--ink); white-space: pre;
+}
+.request .verb { color: var(--accent); }
+.request .dim { color: var(--slate); }
+
+.pipeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 2px; }
+.pipeline li {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 11px 14px; border-radius: var(--r-xs);
+  background: rgba(255, 255, 255, .55);
+  font-size: var(--t-body); color: var(--slate);
+  transition: background-color .3s ease, color .3s ease;
+}
+.pipeline li b { font-weight: 500; color: var(--ink); }
+.pipeline li .tick { margin-inline-start: auto; font-size: var(--t-small); }
+.pipeline li[data-live='true'] { background: var(--canvas); color: var(--ink); }
+.pipeline li[data-live='true'] .tick { color: var(--field); }
+
+.meter {
+  margin-top: 20px; padding-top: 18px;
+  display: flex; flex-wrap: wrap; gap: 10px 32px; align-items: baseline;
+  font-size: var(--t-body); color: var(--ink);
+}
+.meter b { font-weight: 600; font-variant-numeric: tabular-nums; }
+.meter .sample { margin-inline-start: auto; font-size: var(--t-small); color: var(--slate); }
+
+/* ---------- 区块：更大的分隔 ---------- */
+.band { padding-block: clamp(80px, 12vw, 176px) 0; }
+.band-dark {
+  margin-top: clamp(80px, 12vw, 176px);
+  background: var(--field); color: var(--on-field);
+  padding-block: clamp(72px, 10vw, 140px);
+}
+.band-dark .wrap { display: grid; gap: 28px; justify-items: start; }
+.band-dark h2 { font-size: var(--t-title); line-height: 1.08; max-width: 22ch; text-wrap: balance; }
+.band-dark p { max-width: 52ch; color: rgba(255, 255, 255, .82); }
+
+h2.section { font-size: var(--t-title); line-height: 1.08; max-width: 20ch; text-wrap: balance; }
+.section-lede { margin-top: 18px; max-width: 52ch; font-size: var(--t-lead); text-wrap: pretty; }
+
+/* 改一行就接上 */
+.swap { margin-top: clamp(36px, 5vw, 60px); display: grid; gap: 18px; }
+.swap-row { display: grid; grid-template-columns: 108px minmax(0, 1fr); gap: 8px 20px; align-items: baseline; }
+.swap-row h3 { font-size: var(--t-small); font-weight: 600; color: var(--slate); }
+.swap-row pre {
+  margin: 0; padding: 16px 18px; border-radius: var(--r-sm);
+  background: var(--stone); overflow-x: auto;
+  font-family: var(--mono); font-size: var(--t-small); line-height: 1.8;
+}
+.swap-row.is-after pre { background: var(--pale); }
+.swap-row .removed { color: var(--slate); text-decoration: line-through; }
+.swap-row .added { color: var(--field); }
+.swap-note { font-size: var(--t-small); color: var(--slate); }
+
+.steps { margin: clamp(36px, 5vw, 60px) 0 0; padding: 0; list-style: none; display: grid; gap: 26px; }
+.steps li { max-width: 62ch; }
+.steps h3 { font-size: var(--t-lead); font-weight: 600; }
+.steps p { margin-top: 8px; }
+.steps code {
+  font-family: var(--mono); font-size: var(--t-small);
+  background: var(--stone); border-radius: var(--r-xs); padding: 2px 7px;
+}
+
+/* 能力 + 渠道配置片段：左侧词条，右侧产品的真实界面 */
+.split {
+  margin-top: clamp(36px, 5vw, 60px);
+  display: grid; gap: clamp(28px, 4vw, 56px);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); align-items: start;
+}
+.ledger { display: grid; gap: 28px; }
+.ledger div { max-width: 46ch; }
+.ledger h3 { font-size: var(--t-lead); font-weight: 600; }
+.ledger p { margin-top: 9px; }
+
+/* 产品自己的界面片段 */
+.panel { border-radius: var(--r-media); background: var(--stone); padding: clamp(18px, 2.4vw, 26px); }
+.panel + .panel { margin-top: 22px; }
+.panel-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 18px; margin-bottom: 16px; }
+.panel-head h3 { font-size: var(--t-body); font-weight: 600; }
+.panel-head .sample { margin-inline-start: auto; font-size: var(--t-small); color: var(--slate); }
+.panel-note { margin-top: 14px; font-size: var(--t-small); color: var(--slate); }
+
+.rows { display: grid; gap: 10px; }
+.row {
+  display: grid; grid-template-columns: minmax(0, 1fr) auto;
+  gap: 6px 16px; align-items: baseline;
+  background: var(--canvas); border-radius: var(--r-xs); padding: 13px 16px;
+}
+.row h4 { margin: 0; font-size: var(--t-body); font-weight: 500; }
+.row .meta { grid-column: 1 / -1; font-size: var(--t-small); color: var(--slate); }
+.row .val { font-size: var(--t-body); font-variant-numeric: tabular-nums; }
+
+table { width: 100%; border-collapse: collapse; background: var(--canvas); border-radius: var(--r-sm); overflow: hidden; }
+caption { text-align: start; padding: 0 0 12px; font-size: var(--t-small); color: var(--slate); }
+th, td { text-align: start; padding: 12px 16px; font-size: var(--t-small); }
+th { font-weight: 600; color: var(--slate); }
+tbody tr + tr th, tbody tr + tr td { border-top: 1px solid var(--hairline); }
+td.num { font-variant-numeric: tabular-nums; }
+.state { display: inline-flex; align-items: center; gap: 7px; }
+.state::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--field); }
+.state.warn::before { background: var(--mark); }
+.state.fail::before { background: var(--error); }
+.table-scroll { overflow-x: auto; }
+
+/* 问答：原生 details，无脚本可开合 */
+.faq { margin-top: clamp(36px, 5vw, 60px); display: grid; gap: 4px; }
+.faq details { padding: 22px 0; }
+.faq summary {
+  cursor: pointer; list-style: none; display: flex; align-items: baseline; gap: 14px;
+  font-size: var(--t-lead); font-weight: 500;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: '+'; margin-inline-start: auto; font-size: var(--t-lead); color: var(--slate); }
+.faq details[open] summary::after { content: '\2212'; }
+.faq p { margin-top: 14px; max-width: 68ch; }
+
+/* ---------- 页脚：一次收束，不是站点地图 ---------- */
+.site-foot { padding-block: clamp(72px, 10vw, 140px) 40px; }
+.foot-name {
+  font-size: var(--t-display); font-weight: 500; letter-spacing: -.045em;
+  line-height: .9; color: var(--near-black);
+}
+.foot-legal {
+  margin-top: clamp(36px, 5vw, 56px);
+  display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline;
+  font-size: var(--t-small); color: var(--slate);
+}
+.foot-legal a { color: var(--ink); text-decoration: underline; text-underline-offset: 4px; text-decoration-color: var(--hairline); }
+.foot-legal a:hover { text-decoration-color: var(--ink); }
+.foot-legal .attribution { flex-basis: 100%; }
+
+/* ---------- 提示 ---------- */
+.toast {
+  position: fixed; left: 50%; bottom: 28px; transform: translate(-50%, 12px);
+  z-index: 60; max-width: calc(100vw - 32px);
+  background: var(--near-black); color: var(--canvas);
+  padding: 12px 20px; border-radius: var(--r-pill); font-size: var(--t-body);
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease;
+}
+.toast[data-show='true'] { opacity: 1; transform: translate(-50%, 0); }
+
+.noscript-bar { background: var(--pale); color: var(--ink); padding: 12px var(--edge); font-size: var(--t-body); text-align: center; }
+
+/* ---------- 入场：只在脚本可用时启用，逐条错开而不是整页同一个淡入 ---------- */
+.js [data-anim] { opacity: 0; transform: translateY(18px); transition: opacity .5s ease, transform .5s ease; }
+.js [data-anim].is-visible { opacity: 1; transform: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .js [data-anim] { opacity: 1; transform: none; transition: none; }
+  .action:hover { transform: none; }
+}
+
+/* ---------- 响应式 ---------- */
+@media (max-width: 1000px) {
+  .console-grid { grid-template-columns: minmax(0, 1fr); }
+  .split { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 780px) {
+  .nav { display: none; }
+  .masthead .action { display: none; }
+  .menu { display: block; }
+  .swap-row { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  .swap-row h3 { padding-top: 6px; }
+}
+@media (max-width: 520px) {
+  .field { margin-inline-start: 0; width: 100%; }
+  .field select { min-width: 0; flex: 1; }
+  th, td { padding: 10px 12px; }
+  .toast { bottom: 16px; }
+}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">跳到主要内容</a>
+
+<header class="masthead">
+  <div class="wrap masthead-inner">
+    <a class="wordmark" href="#" data-demo="演示预览 · 首页未接入后端">
+      <span class="mark" aria-hidden="true">君</span>
+      <b>君骄数智</b>
+    </a>
+
+    <nav class="nav" aria-label="主导航">
+      <a href="#" data-demo="演示预览 · 控制台未接入后端">控制台</a>
+      <a href="#" data-demo="演示预览 · 模型广场未接入后端">模型广场</a>
+      <a href="#" data-demo="演示预览 · 排行榜未接入后端">排行榜</a>
+      <a href="#" data-demo="演示预览 · 文档未接入后端">文档</a>
+      <a href="#" data-demo="演示预览 · 关于页未接入后端">关于</a>
+    </nav>
+
+    <button class="action" type="button" data-demo="演示预览 · 注册流程未接入后端">开始使用</button>
+
+    <details class="menu">
+      <summary aria-label="打开菜单"></summary>
+      <ul>
+        <li><a href="#" data-demo="演示预览 · 控制台未接入后端">控制台</a></li>
+        <li><a href="#" data-demo="演示预览 · 模型广场未接入后端">模型广场</a></li>
+        <li><a href="#" data-demo="演示预览 · 排行榜未接入后端">排行榜</a></li>
+        <li><a href="#" data-demo="演示预览 · 文档未接入后端">文档</a></li>
+        <li><a href="#" data-demo="演示预览 · 关于页未接入后端">关于</a></li>
+        <li><a href="#" data-demo="演示预览 · 注册流程未接入后端">开始使用</a></li>
+      </ul>
+    </details>
+  </div>
+</header>
+
+<noscript>
+  <p class="noscript-bar">
+    当前环境未启用 JavaScript：页面内容与「改前 / 改后」对照不受影响，接入构造器的按钮与实时提示不可用。
+  </p>
+</noscript>
+
+<main id="main">
+
+  <!-- 首屏：短标题 + 一句话，其余交给当场能用的片段 -->
+  <section class="hero">
+    <div class="wrap">
+      <h1 data-anim><span class="nb">换一行地址，</span><span class="nb">接入所有大模型</span></h1>
+      <p class="lede" data-anim>君骄数智把多家模型供应商收敛成一个 OpenAI 兼容接口：统一鉴权、统一计量、统一排查。现有应用不用改业务代码。</p>
+      <div class="hero-actions" data-anim>
+        <button class="action" type="button" data-demo="演示预览 · 注册流程未接入后端">创建令牌</button>
+        <a class="action-quiet" href="#" data-demo="演示预览 · 文档未接入后端">查看接入文档</a>
+      </div>
+    </div>
+
+    <div class="wrap console">
+      <div class="console-frame" data-ui data-anim>
+        <div class="console-bar">
+          <h2>接入构造器</h2>
+          <span class="note">选一种接口，看这次调用会发到哪里、怎么计量</span>
+          <span class="field">
+            <label for="api-kind">接口类型</label>
+            <select id="api-kind">
+              <option value="chat">对话 · /v1/chat/completions</option>
+              <option value="embedding">向量 · /v1/embeddings</option>
+              <option value="rerank">重排序 · /v1/rerank</option>
+            </select>
+          </span>
+        </div>
+
+        <div class="console-grid">
+          <div class="request">
+            <pre id="request-body" aria-live="polite"><span class="verb">POST</span> /v1/chat/completions
+<span class="dim">Authorization:</span> Bearer sk-jj-••••••••
+<span class="dim">Content-Type:</span> application/json
+
+{
+  <span class="dim">"model"</span>: "jj-chat-pro",
+  <span class="dim">"stream"</span>: true,
+  <span class="dim">"messages"</span>: [
+    { <span class="dim">"role"</span>: "user", <span class="dim">"content"</span>: "你好" }
+  ]
+}</pre>
+          </div>
+
+          <div>
+            <ol class="pipeline" id="pipeline">
+              <li data-step="auth"><b>鉴权</b> 令牌与配额校验 <span class="tick">待发</span></li>
+              <li data-step="limit"><b>限流</b> 项目级速率与额度 <span class="tick">待发</span></li>
+              <li data-step="route"><b>路由</b> 挑一个可用渠道 <span class="tick">待发</span></li>
+              <li data-step="meter"><b>计量</b> 记录模型与令牌数 <span class="tick">待发</span></li>
+            </ol>
+
+            <div class="meter">
+              <span>输入 <b id="usage-in">812</b> 令牌</span>
+              <span>输出 <b id="usage-out">233</b> 令牌</span>
+              <span>耗时 <b id="usage-ms">640</b> 毫秒</span>
+              <span class="sample">演示数据</span>
+            </div>
+
+            <p style="margin-top:18px">
+              <button class="action" type="button" id="run-request">跑一次示例请求</button>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 改一行就接上 -->
+  <section class="band" id="how">
+    <div class="wrap">
+      <h2 class="section" data-anim>接入是三行改动</h2>
+      <p class="section-lede" data-anim>SDK 不用换，业务代码不用动。改动只发生在客户端初始化的那几行。</p>
+
+      <div class="swap">
+        <div class="swap-row" data-anim>
+          <h3>改前</h3>
+<pre>const client = new OpenAI({
+  baseURL: <span class="removed">"https://api.某一家供应商.example/v1"</span>,
+  apiKey: <span class="removed">process.env.VENDOR_KEY</span>,
+})</pre>
+        </div>
+        <div class="swap-row is-after" data-anim>
+          <h3>改后</h3>
+<pre>const client = new OpenAI({
+  baseURL: <span class="added">"https://你的网关域名/v1"</span>,
+  apiKey: <span class="added">process.env.JUNJIAO_KEY</span>,
+})</pre>
+        </div>
+      </div>
+      <p class="swap-note" data-anim>模型名、鉴权方式、流式返回都与原来一致；换供应商时只改网关这一侧的渠道配置。</p>
+
+      <ol class="steps">
+        <li data-anim>
+          <h3>在控制台创建令牌</h3>
+          <p>按项目或环境各发一个令牌，配额与限流挂在令牌上，而不是散落在各个供应商后台。</p>
+        </li>
+        <li data-anim>
+          <h3>把 Base URL 指向网关</h3>
+          <p>填 <code>https://你的网关域名/v1</code>，密钥换成刚创建的令牌。</p>
+        </li>
+        <li data-anim>
+          <h3>在用量里核对一次</h3>
+          <p>跑通之后看用量日志：模型、渠道、令牌数、耗时在同一张表里，对账不用再翻三家后台。</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- 能力 + 渠道配置片段 -->
+  <section class="band" id="features">
+    <div class="wrap">
+      <h2 class="section" data-anim>网关替你做掉接入的脏活</h2>
+      <p class="section-lede" data-anim>这四件事如果放在业务代码里做，每一件都要跟着供应商改动。</p>
+
+      <div class="split">
+        <div class="ledger">
+          <div data-anim>
+            <h3>多渠道路由与故障转移</h3>
+            <p>同一个模型可以挂多个上游渠道，请求失败自动换一家重试，并把这次切换记进日志。</p>
+          </div>
+          <div data-anim>
+            <h3>令牌级配额与限流</h3>
+            <p>额度按令牌分配，超限直接拒绝，而不是等到月底收到一张失控的账单。</p>
+          </div>
+          <div data-anim>
+            <h3>统一计量与调用明细</h3>
+            <p>每次调用都落一条记录：模型、渠道、令牌数、耗时、状态码，口径全站一致。</p>
+          </div>
+          <div data-anim>
+            <h3>协议归一</h3>
+            <p>对上游适配不同供应商的请求格式，对下游只暴露一套 OpenAI 兼容接口。</p>
+          </div>
+        </div>
+
+        <div class="panel" data-ui data-anim>
+          <div class="panel-head">
+            <h3>渠道</h3>
+            <span class="sample">演示数据</span>
+          </div>
+          <div class="rows">
+            <div class="row">
+              <h4>渠道 A</h4>
+              <span class="val">权重 60</span>
+              <span class="meta">上游协议 · 文本生成 · 已启用</span>
+            </div>
+            <div class="row">
+              <h4>渠道 B</h4>
+              <span class="val">权重 30</span>
+              <span class="meta">上游协议 · 文本生成 · 已启用</span>
+            </div>
+            <div class="row">
+              <h4>渠道 C</h4>
+              <span class="val">权重 10</span>
+              <span class="meta">上游协议 · 向量 · 已启用</span>
+            </div>
+            <div class="row">
+              <h4>渠道 D</h4>
+              <span class="val">权重 0</span>
+              <span class="meta">上游协议 · 文本生成 · 已停用</span>
+            </div>
+          </div>
+          <p class="panel-note">同模型的请求按权重分配；某条渠道连续失败后会被自动跳过，恢复后再回到池子里。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 账单和故障在同一张表里 -->
+  <section class="band" id="console">
+    <div class="wrap">
+      <h2 class="section" data-anim>账单和故障，在同一张表里</h2>
+      <p class="section-lede" data-anim>下面是控制台两个界面的结构示意，用于确认字段与信息密度。</p>
+
+      <div class="split">
+        <div class="panel" data-ui data-anim>
+          <div class="panel-head">
+            <h3>用量日志</h3>
+            <span class="sample">演示数据</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <caption>最近 5 条调用</caption>
+              <thead>
+                <tr>
+                  <th scope="col">时间</th>
+                  <th scope="col">模型</th>
+                  <th scope="col">渠道</th>
+                  <th scope="col">令牌数</th>
+                  <th scope="col">状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">14:02:11</th>
+                  <td>jj-chat-pro</td>
+                  <td>渠道 A</td>
+                  <td class="num">1,024</td>
+                  <td><span class="state">成功</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">14:02:09</th>
+                  <td>jj-chat-pro</td>
+                  <td>渠道 B</td>
+                  <td class="num">986</td>
+                  <td><span class="state warn">已重试</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">14:01:52</th>
+                  <td>jj-embed-v2</td>
+                  <td>渠道 A</td>
+                  <td class="num">2,048</td>
+                  <td><span class="state">成功</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">14:01:30</th>
+                  <td>jj-chat-lite</td>
+                  <td>渠道 C</td>
+                  <td class="num">512</td>
+                  <td><span class="state fail">配额超限</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">14:00:58</th>
+                  <td>jj-rerank-v1</td>
+                  <td>渠道 B</td>
+                  <td class="num">1,536</td>
+                  <td><span class="state">成功</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="panel-note">失败与重试同样入库，排查时不必再去各家后台比对时间戳。</p>
+        </div>
+
+        <div class="panel" data-ui data-anim>
+          <div class="panel-head">
+            <h3>令牌</h3>
+            <span class="sample">演示数据</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <caption>当前项目下的令牌</caption>
+              <thead>
+                <tr>
+                  <th scope="col">名称</th>
+                  <th scope="col">分组</th>
+                  <th scope="col">已用 / 额度</th>
+                  <th scope="col">状态</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">prod-web</th>
+                  <td>生产</td>
+                  <td class="num">62% / 200 万</td>
+                  <td><span class="state">正常</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">batch-job</th>
+                  <td>批处理</td>
+                  <td class="num">31% / 500 万</td>
+                  <td><span class="state">正常</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">staging</th>
+                  <td>测试</td>
+                  <td class="num">8% / 50 万</td>
+                  <td><span class="state">正常</span></td>
+                </tr>
+                <tr>
+                  <th scope="row">old-web</th>
+                  <td>生产</td>
+                  <td class="num">100% / 20 万</td>
+                  <td><span class="state fail">已停用</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="panel-note">每个令牌可以限定到指定的模型分组，测试环境不会误用生产额度。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 技术负责人真正会问的 -->
+  <section class="band" id="faq">
+    <div class="wrap">
+      <h2 class="section" data-anim>上线前会问到的问题</h2>
+
+      <div class="faq">
+        <details data-anim>
+          <summary>某一家上游挂了会怎样？</summary>
+          <p>网关按渠道权重与顺序重试，失败即切到下一个可用渠道，并把这次切换写进该次调用的记录。若所有渠道都不可用，返回与原供应商一致的错误结构，业务侧的重试逻辑不用改。</p>
+        </details>
+        <details data-anim>
+          <summary>计费按令牌数还是按次数？</summary>
+          <p>按令牌计量，输入与输出分开记录，汇率与倍率在渠道配置里设定。具体结算口径与开票方式属于商务条款，以双方约定为准。</p>
+        </details>
+        <details data-anim>
+          <summary>请求内容会经过你们吗？</summary>
+          <p>请求经网关转发到上游模型服务，网关负责鉴权、限流、路由与计量。日志默认记录请求元信息（模型、渠道、令牌数、耗时、状态码）；请求正文是否留存取决于部署时的日志配置，可按需关闭。</p>
+        </details>
+        <details data-anim>
+          <summary>能不能只接一部分模型？</summary>
+          <p>可以。模型与渠道在控制台逐个启用，令牌也可以按分组限制到指定的模型集合，未启用的模型对客户端不可见。</p>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 收束 -->
+  <section class="band-dark" id="cta">
+    <div class="wrap">
+      <h2 data-anim>先把一次调用跑通，再谈接入范围</h2>
+      <p data-anim>创建令牌即可拿到测试额度；跑通之后，换供应商只是控制台里的一次配置。</p>
+      <div class="hero-actions" data-anim>
+        <button class="action on-field" type="button" data-demo="演示预览 · 注册流程未接入后端">创建令牌</button>
+        <a class="action-quiet on-field" href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p class="foot-name" data-anim>君骄数智</p>
+
+    <!--
+      合规声明（AGPLv3 第 7 条附加条款，请勿删除或改写）：
+      下方必须保留署名句子与指向原项目的可见链接。
+    -->
+    <div class="foot-legal">
+      <span>© 2026 君骄数智</span>
+      <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
+      <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
+      <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
+      <span>本站基于
+        <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
+        构建</span>
+      <span class="attribution">Frontend design and development by New API contributors.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* 标记脚本可用：入场动画只在此时启用，脚本被剥离后内容依然可见 */
+document.documentElement.classList.add('js');
+
+(function () {
+  'use strict';
+
+  var STATIC = /(?:\?|&)no-anim=1(?:&|$)/.test(window.location.search);
+  if (STATIC) document.documentElement.classList.add('no-anim');
+
+  var toastEl = document.getElementById('toast');
+  var toastTimer = null;
+
+  function showToast(message) {
+    if (!toastEl) return;
+    toastEl.textContent = message || '演示预览 · 未接入后端';
+    toastEl.setAttribute('data-show', 'true');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { toastEl.setAttribute('data-show', 'false'); }, 2400);
+  }
+
+  /* 演示态点击：统一提示，不留死链 */
+  document.addEventListener('click', function (event) {
+    var demo = event.target.closest ? event.target.closest('[data-demo]') : null;
+    if (!demo) return;
+    event.preventDefault();
+    showToast(demo.getAttribute('data-demo'));
+    var menu = document.querySelector('.menu');
+    if (menu) menu.open = false;
+  });
+
+  /* 接入构造器：换接口类型就换请求，跑一次就走完流水线 */
+  var REQUESTS = {
+    chat: {
+      usage: [812, 233, 640],
+      body: '<span class="verb">POST</span> /v1/chat/completions\n' +
+        '<span class="dim">Authorization:</span> Bearer sk-jj-\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\n' +
+        '<span class="dim">Content-Type:</span> application/json\n\n' +
+        '{\n  <span class="dim">"model"</span>: "jj-chat-pro",\n  <span class="dim">"stream"</span>: true,\n' +
+        '  <span class="dim">"messages"</span>: [\n    { <span class="dim">"role"</span>: "user", <span class="dim">"content"</span>: "\u4f60\u597d" }\n  ]\n}'
+    },
+    embedding: {
+      usage: [2048, 0, 188],
+      body: '<span class="verb">POST</span> /v1/embeddings\n' +
+        '<span class="dim">Authorization:</span> Bearer sk-jj-\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\n' +
+        '<span class="dim">Content-Type:</span> application/json\n\n' +
+        '{\n  <span class="dim">"model"</span>: "jj-embed-v2",\n' +
+        '  <span class="dim">"input"</span>: [\n    "\u4e00\u6bb5\u53e6\u5b58\u7684\u6587\u672c"\n  ]\n}'
+    },
+    rerank: {
+      usage: [1536, 0, 96],
+      body: '<span class="verb">POST</span> /v1/rerank\n' +
+        '<span class="dim">Authorization:</span> Bearer sk-jj-\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022\n' +
+        '<span class="dim">Content-Type:</span> application/json\n\n' +
+        '{\n  <span class="dim">"model"</span>: "jj-rerank-v1",\n' +
+        '  <span class="dim">"query"</span>: "\u600e\u4e48\u63a5\u5165",\n' +
+        '  <span class="dim">"documents"</span>: [ "\u6587\u6863 A", "\u6587\u6863 B" ]\n}'
+    }
+  };
+
+  var pipeline = document.getElementById('pipeline');
+  var requestBody = document.getElementById('request-body');
+  var kindSelect = document.getElementById('api-kind');
+  var runButton = document.getElementById('run-request');
+  var usageIn = document.getElementById('usage-in');
+  var usageOut = document.getElementById('usage-out');
+  var usageMs = document.getElementById('usage-ms');
+  var stepTimer = null;
+  var runTimer = null;
+
+  function resetSteps() {
+    if (!pipeline) return;
+    Array.prototype.forEach.call(pipeline.querySelectorAll('li'), function (li) {
+      li.removeAttribute('data-live');
+      var tick = li.querySelector('.tick');
+      if (tick) tick.textContent = '待发';
+    });
+  }
+
+  function showUsage(kind) {
+    var spec = REQUESTS[kind];
+    if (!spec) return;
+    if (usageIn) usageIn.textContent = spec.usage[0].toLocaleString('zh-CN');
+    if (usageOut) usageOut.textContent = spec.usage[1].toLocaleString('zh-CN');
+    if (usageMs) usageMs.textContent = spec.usage[2];
+  }
+
+  function applyKind(kind) {
+    var spec = REQUESTS[kind] || REQUESTS.chat;
+    if (requestBody) requestBody.innerHTML = spec.body;
+    resetSteps();
+    showUsage(kind);
+  }
+
+  if (kindSelect) kindSelect.addEventListener('change', function () { applyKind(kindSelect.value); });
+
+  function runOnce() {
+    if (!pipeline) return;
+    if (stepTimer) clearTimeout(stepTimer);
+    if (runTimer) clearTimeout(runTimer);
+    resetSteps();
+    var steps = pipeline.querySelectorAll('li');
+    Array.prototype.forEach.call(steps, function (li, index) {
+      stepTimer = setTimeout(function () {
+        li.setAttribute('data-live', 'true');
+        var tick = li.querySelector('.tick');
+        if (tick) tick.textContent = '完成';
+      }, 130 * index);
+    });
+    runTimer = setTimeout(function () {
+      showToast('示例请求已走完网关流水线（演示数据）');
+    }, 130 * steps.length + 140);
+  }
+
+  if (runButton) runButton.addEventListener('click', runOnce);
+
+  /* 入场：逐条错开；脚本没跑、环境不支持或 IO 未触发时兜底全部显示 */
+  var animItems = Array.prototype.slice.call(document.querySelectorAll('[data-anim]'));
+
+  function revealAll() {
+    animItems.forEach(function (item) { item.classList.add('is-visible'); });
+  }
+
+  if (STATIC || !window.IntersectionObserver) {
+    revealAll();
+  } else {
+    var fired = false;
+    var observer = new IntersectionObserver(function (entries) {
+      fired = true;
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        var siblings = entry.target.parentElement
+          ? Array.prototype.slice.call(entry.target.parentElement.children).filter(function (node) {
+              return node.hasAttribute && node.hasAttribute('data-anim');
+            })
+          : [entry.target];
+        entry.target.style.transitionDelay = Math.min(Math.max(0, siblings.indexOf(entry.target)) * 70, 280) + 'ms';
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target);
+      });
+    }, { rootMargin: '0px 0px -10% 0px', threshold: 0.15 });
+    animItems.forEach(function (item) { observer.observe(item); });
+    setTimeout(function () { if (!fired) revealAll(); }, 900);
+  }
+
+  /* 出图与演示用的静态态：?demo=sent 直接把流水线走完 */
+  var demoState = (window.location.search.match(/(?:\?|&)demo=([a-z]+)/) || [])[1];
+  if (demoState === 'sent') {
+    revealAll();
+    runOnce();
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,11 @@
+{
+  "name": "maas-home-preview",
+  "version": "1.0.0",
+  "private": true,
+  "description": "君骄数智 · 首页独立预览（基于 new-api 的二开第一步，纯静态单文件）",
+  "type": "module",
+  "scripts": {
+    "test": "node --test \"test/**/*.mjs\"",
+    "shots": "node scripts/shots.mjs"
+  }
+}
