@@ -26,18 +26,25 @@
 
 <style>
 :root {
-  --canvas: #ffffff;
-  --ink: #141017;
-  --muted: #5d5763;
-  --line: rgba(20, 16, 23, .10);
-  --accent: #2f5bea;        /* 品牌蓝：焦点环、链接、强调条 */
-  --brand-teal: #0ea5a0;    /* 下面三色只用于地球的光谱 */
-  --brand-blue: #2f5bea;
-  --brand-coral: #ff7a59;
-  --glass: rgba(255, 255, 255, .55);
-  --glass-line: rgba(255, 255, 255, .70);
+  /* 深色科技风：骨架色。品牌资产（图形标、品牌蓝、地球光谱）保持不变，
+     换的是页面骨架 —— 不是把参考站的颜色搬过来 */
+  --canvas: #0a0c11;
+  --surface: #12151d;       /* 抬升面：模型区、卡片 */
+  --ink: #edf0f6;
+  --muted: #949db0;
+  --line: rgba(255, 255, 255, .11);
+  --accent: #6f8dff;        /* 深底上品牌蓝提亮一档，保证可读 */
+  --brand-teal: #2ad4c8;    /* 地球光谱在深底上整体提亮 */
+  --brand-blue: #5b82ff;
+  --brand-coral: #ff8f6b;
+  --glass: rgba(24, 28, 38, .58);
+  --glass-line: rgba(255, 255, 255, .10);
+  --fill: rgba(255, 255, 255, .05);    /* 浅色填充（悬停、图标底） */
+  --fill-strong: rgba(255, 255, 255, .09);
 
   --sans: Inter, ui-sans-serif, system-ui, 'Segoe UI', 'Microsoft YaHei', 'PingFang SC', sans-serif;
+  /* 等宽体只用在角落标注与面板读数上（仪表感），正文仍是 Inter */
+  --mono: ui-monospace, 'Cascadia Mono', 'SFMono-Regular', Consolas, 'Liberation Mono', monospace; /* taste-skill-ignore 客户点名的仪表感标注，只在角落与面板读数上使用 */
 
   /* 全站五个字号（窄屏在媒体查询里重定义 --t-display，不额外引入第六档） */
   --t-display: clamp(2.6rem, 5.4vw, 4.8rem);
@@ -120,7 +127,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-size: var(--t-lead); color: var(--muted);
   transition: color .2s ease, background-color .2s ease;
 }
-.nav a:hover { color: var(--ink); background: rgba(20, 16, 23, .05); }
+.nav a:hover { color: var(--ink); background: var(--fill); }
 
 .nav-actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
 
@@ -166,7 +173,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--pill);
   /* 原组件这里是最黑 .2 且离得很开，白底上就是上下两道黑；改成贴着按钮的浅投影，
      静息态就接近原来「悬停时」的样子（用户反馈：悬停好看，静息难看） */
-  background: linear-gradient(180deg, rgba(20, 16, 23, var(--sh)), rgba(20, 16, 23, calc(var(--sh) / 4))); /* taste-skill-ignore 同上，投影本体 */
+  background: linear-gradient(180deg, rgba(0, 0, 0, calc(var(--sh) * 2.2)), rgba(0, 0, 0, calc(var(--sh) / 2))); /* taste-skill-ignore 同上，投影本体 */
   width: calc(100% - var(--cut) - 0.25em);
   height: calc(100% - var(--cut) - 0.25em);
   top: calc(var(--cut) - 0.7em);
@@ -276,7 +283,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu ul {
   position: absolute; right: 0; top: 100%; min-width: 12rem;
   display: grid; gap: 4px; padding: 12px;
-  background: rgba(255, 255, 255, .97); border: 1px solid var(--glass-line);
+  background: rgba(20, 24, 33, .96); border: 1px solid var(--glass-line);
   border-radius: 20px;
   box-shadow: 0 24px 50px -24px rgba(40, 20, 45, .45); /* taste-skill-ignore 真正的浮层（下拉菜单） */
   backdrop-filter: blur(18px); /* taste-skill-ignore 同上，浮层需与其下内容分离 */
@@ -294,7 +301,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* 收场：JS 挂类播完再真正折叠（用定时器，不依赖 rAF） */
 .menu.is-closing ul { opacity: 0; transform: translateY(-10px) scale(.96); pointer-events: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
-.menu a:hover { background: rgba(20, 16, 23, .05); }
+.menu a:hover { background: var(--fill); }
 
 /* ---------- 首屏 ---------- */
 .hero { position: relative; overflow: clip; padding-block: clamp(36px, 4.1vw, 59px) clamp(40px, 6vw, 84px); }
@@ -324,6 +331,21 @@ ul { margin: 0; padding: 0; list-style: none; }
 .hero-marks-label { font-size: var(--t-small); color: var(--muted); letter-spacing: .04em; }
 .hero-marks svg { width: 22px; height: 22px; opacity: .78; transition: opacity .2s ease, transform .2s ease; }
 .hero-marks svg:hover { opacity: 1; transform: translateY(-2px); }
+/* 描边小胶囊标签：借参考站那种「细边框小标签」的技术感，不填色 */
+.hero-chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: clamp(18px, 2.4vw, 26px); }
+.hero-chips li {
+  font-size: var(--t-small); color: var(--muted); line-height: 1;
+  padding: 7px 12px; border: 1px solid var(--line); border-radius: var(--pill);
+}
+/* 角落等宽字标注：纯装饰的「仪表感」，用等宽体与正文拉开层次 */
+.hero-meta {
+  position: absolute; inset: 0; z-index: 5; pointer-events: none;
+  font-family: var(--mono); /* taste-skill-ignore 同上：角落仪表标注 */
+  font-size: var(--t-small); letter-spacing: .14em; text-transform: uppercase; color: var(--muted);
+}
+.hero-meta span { position: absolute; opacity: .62; }
+.hero-meta-tl { top: clamp(8px, 1.6vw, 20px); left: var(--edge); }
+.hero-meta-br { right: var(--edge); bottom: clamp(8px, 1.6vw, 20px); }
 
 /* ---------- 那张大图：参考站的主角，约占 1.9 个视口高并向右侧出血 ---------- */
 .hero-art { position: relative; min-height: clamp(560px, 74vw, 1060px); }
@@ -374,7 +396,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .glass-row b { color: var(--ink); font-weight: 600; font-size: var(--t-body); }
 .dot {
   width: 8px; height: 8px; border-radius: 50%; flex: none;
-  background: rgba(20, 16, 23, .16);
+  background: rgba(0, 0, 0, .5);
   transition: background-color .4s ease, transform .4s ease;
 }
 .glass-row[data-live='true'] .dot { background: var(--accent); animation: breathe 2.6s ease-in-out infinite; }
@@ -383,9 +405,16 @@ ul { margin: 0; padding: 0; list-style: none; }
   .glass-row[data-live='true'] .dot { animation: none; }
 }
 .glass-row .tick { margin-inline-start: auto; font-size: var(--t-small); color: var(--muted); }
+/* 面板读数行：等宽体的「仪表」标题，参考站那种技术感来源 */
+.glass-head {
+  font-family: var(--mono); /* taste-skill-ignore 同上：面板读数行 */
+  font-size: var(--t-small); letter-spacing: .12em;
+  text-transform: uppercase; color: var(--muted); opacity: .8;
+  padding-bottom: 4px; margin-bottom: 6px;
+}
 
 /* ---------- 已接入模型：一排转动的品牌标记，名字在各自下方 ---------- */
-.models { padding-block: clamp(40px, 6vw, 86px); background: #f6f8ff; }
+.models { padding-block: clamp(40px, 6vw, 86px); background: var(--surface); }
 .models-head {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 16px;
   margin-bottom: clamp(24px, 3.4vw, 40px);
@@ -420,7 +449,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   display: grid; justify-items: center; gap: 12px;
   width: clamp(112px, 9vw, 144px);
   padding: 20px 16px 18px; border-radius: 18px;
-  background: var(--canvas);
+  background: var(--surface);
   transform: rotateX(16deg) rotateY(-23deg);
   box-shadow: 0 28px 48px -26px rgba(30, 16, 40, .62); /* taste-skill-ignore 3D 卡片需要有厚度感，这是 brief 要的效果 */
   transition: transform .38s cubic-bezier(.16, 1, .3, 1), box-shadow .38s ease,
@@ -481,11 +510,11 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: 46px; height: 46px; border-radius: 15px;
   display: grid; place-items: center;
   color: var(--cap-col);
-  background: rgba(20, 16, 23, .035);
+  background: var(--fill);
   border: 1px solid var(--line);
   transition: transform .3s cubic-bezier(.16, 1, .3, 1), background-color .3s ease;
 }
-.cap:hover .cap-icon { transform: translateY(-2px); background: rgba(20, 16, 23, .06); }
+.cap:hover .cap-icon { transform: translateY(-2px); background: var(--fill-strong); }
 .cap-icon svg { width: 24px; height: 24px; }
 /* 标题与说明共用第 2~3 列：左缘天然对齐，中间那条空白带也就没了 */
 .cap h3 { grid-column: 2 / span 2; grid-row: 1; font-size: var(--t-title); line-height: 1.04; }
@@ -533,7 +562,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 .foot-legal a {
   color: var(--ink); text-decoration: underline; text-underline-offset: 4px;
-  text-decoration-color: rgba(20, 16, 23, .25);
+  text-decoration-color: rgba(255, 255, 255, .28);
   /* 上下内边距不改行高，但把可点区域撑到 24px 以上（WCAG 2.5.8 最小触摸目标） */
   padding-block: 5px;
 }
@@ -653,11 +682,22 @@ ul { margin: 0; padding: 0; list-style: none; }
 
   <section class="hero">
     <canvas id="petals" aria-hidden="true"></canvas>
+    <!-- 角落等宽字标注：纯装饰的「仪表感」（借参考站的技术调性，不搬它的配色） -->
+    <div class="hero-meta" aria-hidden="true">
+      <span class="hero-meta-tl">JUNJIAO · MAAS</span>
+      <span class="hero-meta-br">RAW 01 / 06</span>
+    </div>
 
     <div class="wrap hero-grid">
       <div class="hero-copy">
         <h1 data-anim><span class="nb">一个接口，</span><span class="nb">接入所有大模型</span></h1>
         <p class="lede" data-anim>企业级 AI 模型统一接入与调度平台</p>
+        <ul class="hero-chips" data-anim>
+          <li>OpenAI 兼容</li>
+          <li>多渠道容灾</li>
+          <li>用量可核对</li>
+          <li>密钥分级</li>
+        </ul>
         <div class="hero-actions" data-anim>
           <span class="fancy-wrap">
             <button class="fancy-btn fancy-btn-solid" type="button" data-demo="演示预览 · 注册流程未接入后端">
@@ -693,6 +733,7 @@ ul { margin: 0; padding: 0; list-style: none; }
         </div>
 
         <div class="glass" data-ui>
+          <p class="glass-head" aria-hidden="true">GATEWAY · LIVE · RAW 01 / 03</p>
           <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>鉴权</b> 令牌与配额<span class="tick">已启用</span></div>
           <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>路由</b> 多渠道自动切换<span class="tick">已启用</span></div>
           <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>计量</b> 每次调用留痕<span class="tick">已启用</span></div>
@@ -868,7 +909,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 01:52</span>
+      <span class="foot-stamp">预览版 2026-10-17 02:01</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -1068,6 +1109,28 @@ document.documentElement.classList.add('js');
     var off = new Float32Array(pn * 3);   /* 相对球面的位移 */
     var vel = new Float32Array(pn * 3);   /* 速度 */
     var scr = new Float32Array(pn * 2);   /* 上一帧的屏幕位置，供炸点/光标算距离 */
+    var scrTz = new Float32Array(pn);     /* 上一帧景深，供星座连线剔除背面 */
+    /* 星座：从陆地点里挑一批「枢纽」，按最近邻连成网 —— 借参考站那种节点+连线的质感，
+       但不另起一层：它就是地球的一部分，跟着地球转，也跟着爆炸散开再被吸回。 */
+    var hubIdx = [], hubEdges = [];
+    (function buildConstellation() {
+      var step = Math.max(1, Math.floor(pn / 44));
+      for (var i = 0; i < pn; i += step) hubIdx.push(i);
+      for (var h = 0; h < hubIdx.length; h++) {
+        var a = hubIdx[h] * 3;
+        var n1 = -1, d1 = Infinity, n2 = -1, d2 = Infinity;
+        for (var k = 0; k < hubIdx.length; k++) {
+          if (k === h) continue;
+          var b = hubIdx[k] * 3;
+          var dx = dots[a] - dots[b], dy = dots[a + 1] - dots[b + 1], dz = dots[a + 2] - dots[b + 2];
+          var d = dx * dx + dy * dy + dz * dz;
+          if (d < d1) { n2 = n1; d2 = d1; n1 = k; d1 = d; }
+          else if (d < d2) { n2 = k; d2 = d; }
+        }
+        if (n1 >= 0) hubEdges.push(h, n1);
+        if (n2 >= 0) hubEdges.push(h, n2);
+      }
+    })();
     var pactive = false;                  /* 还有粒子没归位时为 true */
     var pointer = { x: 0, y: 0, active: false };
 
@@ -1168,6 +1231,7 @@ document.documentElement.classList.add('js');
         tz = Y * sinT + Z * cosT;
         scr[pi * 2] = cx + X * radius;
         scr[pi * 2 + 1] = cy - ty * radius;
+        scrTz[pi] = tz;
         if (tz <= 0.03) continue;
         depth = tz;
         bucket = depth > 0.8 ? 3 : depth > 0.55 ? 2 : depth > 0.28 ? 1 : 0;
@@ -1188,6 +1252,27 @@ document.documentElement.classList.add('js');
         }
         gctx.fill();
       }
+      /* 星座连线 + 枢纽点：压在地球点阵之上，借参考站的「节点+连线」质感 */
+      gctx.strokeStyle = grad;
+      gctx.lineWidth = 1;
+      gctx.globalAlpha = 0.26;
+      gctx.beginPath();
+      for (var e = 0; e < hubEdges.length; e += 2) {
+        var A = hubEdges[e], B = hubEdges[e + 1];
+        if (scrTz[A] <= 0.08 || scrTz[B] <= 0.08) continue;   /* 背面不画，避免穿透感 */
+        gctx.moveTo(scr[A * 2], scr[A * 2 + 1]);
+        gctx.lineTo(scr[B * 2], scr[B * 2 + 1]);
+      }
+      gctx.stroke();
+      gctx.globalAlpha = 0.85;
+      gctx.beginPath();
+      for (var q = 0; q < hubIdx.length; q++) {
+        var hi = hubIdx[q];
+        if (scrTz[hi] <= 0.08) continue;
+        gctx.moveTo(scr[hi * 2] + 2.6, scr[hi * 2 + 1]);
+        gctx.arc(scr[hi * 2], scr[hi * 2 + 1], 2.6, 0, TAU);
+      }
+      gctx.fill();
       gctx.globalAlpha = 1;
     }
 
