@@ -99,10 +99,10 @@ test('只有一个 h1，且短语之间断行、不在词中断开', () => {
   const h1s = raw.match(/<h1\b/gi) ?? []
   assert.equal(h1s.length, 1, '页面只能有一个 h1')
   const h1 = raw.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)[1]
-  assert.match(h1, /接入所有大模型/, 'h1 必须包含主标语')
+  assert.match(h1, /让创新稳定落地/, 'h1 必须包含主标语')
   assert.match(
     h1,
-    /class="nb">接入所有大模型/,
+    /class="nb">让创新稳定落地/,
     '主标语必须包在 nowrap 组里，避免中文在词中断行'
   )
 })
