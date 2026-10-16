@@ -275,10 +275,32 @@ ul { margin: 0; padding: 0; list-style: none; }
 }
 
 .menu { display: none; margin-inline-start: auto; position: relative; }
-.menu summary { list-style: none; cursor: pointer; padding: 10px 6px; font-size: var(--t-lead); }
+.menu summary {
+  list-style: none; cursor: pointer;
+  width: 40px; height: 40px; border-radius: 13px;
+  display: grid; place-items: center;
+  border: 1px solid var(--line); background: var(--glass);
+  backdrop-filter: blur(14px); /* taste-skill-ignore 与顶栏其他玻璃元素同一套语汇 */
+  transition: background-color .2s ease;
+}
+.menu summary:hover { background: var(--fill); }
 .menu summary::-webkit-details-marker { display: none; }
-.menu summary::after { content: '菜单'; }
-.menu[open] summary::after { content: '收起'; }
+/* 三条横线的汉堡图标：用三层渐变画，不额外占标记，开合时换成叉 */
+.menu summary::after {
+  content: ''; width: 17px; height: 12px;
+  background:
+    linear-gradient(currentColor, currentColor) 0 0 / 100% 2px no-repeat, /* taste-skill-ignore 汉堡图标的三条横线 */
+    linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat, /* taste-skill-ignore 同上 */
+    linear-gradient(currentColor, currentColor) 0 100% / 100% 2px no-repeat; /* taste-skill-ignore 同上 */
+  color: var(--ink);              /* taste-skill-ignore 图标用 currentColor 跟随文字色 */
+  transition: transform .24s cubic-bezier(.16, 1, .3, 1);
+}
+.menu[open] summary::after {
+  background:
+    linear-gradient(currentColor, currentColor) 0 45% / 100% 2px no-repeat, /* taste-skill-ignore 同上，开合态换成叉 */
+    linear-gradient(currentColor, currentColor) 0 55% / 100% 2px no-repeat; /* taste-skill-ignore 同上 */
+  transform: rotate(45deg);
+}
 .menu ul {
   position: absolute; right: 0; top: 100%; min-width: 12rem;
   display: grid; gap: 4px; padding: 12px;
@@ -345,8 +367,15 @@ ul { margin: 0; padding: 0; list-style: none; }
   50%      { opacity: 1;  transform: scale(1.1); }
 }
 @media (max-width: 1040px) {
-  .bs-blob { left: 44%; top: 18%; width: 78%; }
-  .bs-glow { left: 34%; top: 12%; width: 92%; }
+  .bs-blob { left: 40%; top: 6%; width: 70%; }
+  .bs-glow { left: 26%; top: 2%; width: 86%; }
+}
+@media (max-width: 720px) {
+  /* 手机上正文与色体在同一竖列，必然重叠 —— 所以不是挪位置，
+     而是把它压成很淡的氛围层，保证文字始终清晰可读 */
+  .brand-shape { opacity: .3; }
+  .bs-blob { left: 30%; top: 8%; width: 78%; }
+  .bs-glow { left: 14%; top: 3%; width: 92%; }
 }
 @media (prefers-reduced-motion: reduce) {
   .bs-blob, .bs-glow { animation: none; }
@@ -673,6 +702,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 /* ---------- 页脚 ---------- */
 .foot { padding-block: clamp(46px, 8vw, 110px) 40px; }
 .foot-logo { height: clamp(52px, 7.6vw, 98px); width: auto; display: block; }
+@media (max-width: 720px) { .foot-logo { height: 38px; } }   /* 手机上原来显得过大 */
 .foot-legal {
   margin-top: clamp(26px, 4vw, 44px);
   display: flex; flex-wrap: wrap; gap: 8px 22px; align-items: baseline;
@@ -868,7 +898,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 
         <div class="glass" data-ui>
           <p class="glass-head" aria-hidden="true">GATEWAY · LIVE · RAW 01 / 03</p>
-          <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>鉴权</b> 令牌与配额<span class="tick">已启用</span></div>
+          <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>鉴权</b> 密钥与配额<span class="tick">已启用</span></div>
           <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>路由</b> 多渠道自动切换<span class="tick">已启用</span></div>
           <div class="glass-row" data-live="true"><span class="dot" aria-hidden="true"></span><b>计量</b> 每次调用留痕<span class="tick">已启用</span></div>
         </div>
@@ -1051,7 +1081,7 @@ ul { margin: 0; padding: 0; list-style: none; }
         <h2>下一次调用，从这里开始</h2>
         <span class="fancy-wrap fancy-wrap-on-dark">
           <button class="fancy-btn" type="button" data-demo="演示预览 · 注册流程未接入后端">
-            <span class="fancy-label">创建令牌
+            <span class="fancy-label">立即接入
               <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
           </button>
@@ -1076,7 +1106,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 04:41</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:46</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>

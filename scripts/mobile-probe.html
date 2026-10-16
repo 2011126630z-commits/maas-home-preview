@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>M=?</title>
+<style>html,body{margin:0}iframe{display:block;border:0}</style></head>
+<body>
+<iframe id="f" scrolling="no"></iframe>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 390);
+  var f = document.getElementById('f');
+  f.style.width = w + 'px'; f.style.height = '844px';
+  f.src = q.get('src') || '';
+  f.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      try {
+        var win = f.contentWindow, d = win.document;
+        function g(sel, prop) {
+          var el = d.querySelector(sel);
+          if (!el) return sel + '=缺失';
+          return sel + '.' + prop + '=' + win.getComputedStyle(el)[prop];
+        }
+        out.push('视口=' + win.innerWidth + 'x' + win.innerHeight);
+        out.push(g('.hero', 'gridTemplateColumns'));
+        out.push(g('.hero', 'display'));
+        out.push(g('h1', 'fontSize'));
+        out.push(g('.hero-copy', 'width'));
+        out.push(g('.hero-chips', 'flexWrap'));
+        out.push(g('.hero-art', 'minHeight'));
+        out.push(g('.mast', 'position'));
+        out.push(g('.brand-shape', 'position'));
+        out.push('doc宽=' + d.documentElement.scrollWidth + ' body宽=' + d.body.scrollWidth);
+        /* 找出真正超出视口右边界的元素 */
+        var bad = [];
+        var all = d.querySelectorAll('body *');
+        for (var i = 0; i < all.length; i++) {
+          var el = all[i], r = el.getBoundingClientRect();
+          if (r.width < 2 || r.height < 2) continue;
+          var cs = win.getComputedStyle(el);
+          if (cs.position === 'fixed') continue;
+          if (r.right > win.innerWidth + 1.5) {
+            var cls = (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.');
+            bad.push(el.tagName.toLowerCase() + (cls ? '.' + cls : '') + '(右' + Math.round(r.right) + ')');
+          }
+        }
+        out.push('超出右边界的元素: ' + (bad.length ? bad.slice(0, 8).join(' , ') : '无'));
+      } catch (e) { out.push('ERR=' + e.name + ':' + e.message); }
+      document.title = 'M=' + out.join(' | ');
+    }, 2500);
+  });
+})();
+</script>
+</body></html>
