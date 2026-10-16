@@ -288,9 +288,18 @@ ul { margin: 0; padding: 0; list-style: none; }
   text-wrap: pretty;
 }
 .hero-actions { margin-top: clamp(26px, 3.4vw, 38px); display: flex; flex-wrap: wrap; gap: 12px; }
+/* 首屏的模型标条：填住按钮下方那片空白，顺带第一眼就把「接入了哪些模型」交代掉 */
+.hero-marks {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: clamp(12px, 1.5vw, 20px);
+  margin-top: clamp(26px, 3.6vw, 44px);
+}
+.hero-marks-label { font-size: var(--t-small); color: var(--muted); letter-spacing: .04em; }
+.hero-marks svg { width: 22px; height: 22px; opacity: .78; transition: opacity .2s ease, transform .2s ease; }
+.hero-marks svg:hover { opacity: 1; transform: translateY(-2px); }
 
 /* ---------- 那张大图：参考站的主角，约占 1.9 个视口高并向右侧出血 ---------- */
-.hero-art { position: relative; min-height: clamp(560px, 82vw, 1180px); }
+.hero-art { position: relative; min-height: clamp(560px, 74vw, 1060px); }
 /* 地球的气晕：首屏的颜色来源，单色品牌蓝而不是参考站那种多色雾面 */
 .hero-art::before {
   content: '';
@@ -376,10 +385,13 @@ ul { margin: 0; padding: 0; list-style: none; }
 .marquee:focus-within .marquee-track { animation-play-state: paused; }
 @keyframes marquee-slide { to { transform: translateX(-50%); } }
 
-/* 3D 卡片：整排斜着立起来，指到哪张哪张转正浮起 */
+/* 3D 卡片：整排斜着立起来，指到哪张哪张转正浮起。
+   卡片外面包一层 slot，间距放在 slot 上 —— 这样鼠标落在卡片之间的缝里，
+   悬停目标仍然是 slot，不会出现「跑马灯停了但卡片不转正」的死区。 */
+.model-slot { margin-right: clamp(20px, 2.6vw, 38px); }
 .model-cell {
   display: grid; justify-items: center; gap: 12px;
-  width: clamp(112px, 9vw, 144px); margin-right: clamp(20px, 2.6vw, 38px);
+  width: clamp(112px, 9vw, 144px);
   padding: 20px 16px 18px; border-radius: 18px;
   background: var(--canvas);
   transform: rotateX(16deg) rotateY(-23deg);
@@ -388,11 +400,11 @@ ul { margin: 0; padding: 0; list-style: none; }
     translate .6s cubic-bezier(.16, 1, .3, 1), opacity .6s ease;
 }
 @media (hover: hover) and (pointer: fine) {
-  .model-cell:hover {
+  .model-slot:hover .model-cell {
     transform: rotateX(0deg) rotateY(0deg) translateZ(28px);
     box-shadow: 0 34px 60px -30px rgba(30, 16, 40, .5); /* taste-skill-ignore 同上，浮起时加深 */
   }
-  .model-cell:hover svg { opacity: 1; }
+  .model-slot:hover .model-cell svg { opacity: 1; }
 }
 /* 键盘走到这里也转正，触屏不受影响 */
 .model-cell:focus-within,
@@ -416,27 +428,53 @@ ul { margin: 0; padding: 0; list-style: none; }
   .js .model-cell[data-anim] { opacity: 1; translate: none; transition: none; }
 }
 
-/* ---------- 能力：一条一个，标题与说明左右分栏 ---------- */
-.caps { padding-block: clamp(56px, 10vw, 170px); }
-.caps-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(30px, 4.6vw, 64px); }
+/* ---------- 能力：图形 + 标题说明 + 右侧示意图 ---------- */
+.caps { padding-block: clamp(48px, 7vw, 118px); }
+.caps-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(26px, 3.6vw, 52px); }
 .cap {
   position: relative; padding-top: 22px;
-  display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  gap: 10px clamp(24px, 5vw, 84px); align-items: baseline;
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr) minmax(0, 1.05fr) minmax(0, 0.78fr);
+  gap: 8px clamp(18px, 2.2vw, 40px);
+  align-items: start;
 }
 .cap::before {
   content: ''; position: absolute; top: 0; left: 0;
-  width: 46px; height: 3px; border-radius: 3px; background: var(--accent);
+  width: 46px; height: 3px; border-radius: 3px; background: var(--cap-col);
   transition: width .3s cubic-bezier(.16, 1, .3, 1);
 }
 .cap:hover::before { width: 84px; }
-/* 四条能力各给一个品牌色，让中间这段也有颜色 */
-.cap:nth-child(1)::before { background: var(--brand-teal); }
-.cap:nth-child(2)::before { background: var(--brand-blue); }
-.cap:nth-child(3)::before { background: #7c5cff; }
-.cap:nth-child(4)::before { background: var(--brand-coral); }
-.cap h3 { font-size: var(--t-title); line-height: 1.04; }
-.cap p { font-size: var(--t-lead); color: var(--muted); max-width: 54ch; }
+/* 四条能力各一个品牌色：强调条、图形、示意图都用同一个变量 */
+.cap:nth-child(1) { --cap-col: var(--brand-teal); }
+.cap:nth-child(2) { --cap-col: var(--brand-blue); }
+.cap:nth-child(3) { --cap-col: #7c5cff; }
+.cap:nth-child(4) { --cap-col: var(--brand-coral); }
+.cap-icon {
+  grid-column: 1; grid-row: 1 / span 2; align-self: start;
+  width: 46px; height: 46px; border-radius: 15px;
+  display: grid; place-items: center;
+  color: var(--cap-col);
+  background: rgba(20, 16, 23, .035);
+  border: 1px solid var(--line);
+  transition: transform .3s cubic-bezier(.16, 1, .3, 1), background-color .3s ease;
+}
+.cap:hover .cap-icon { transform: translateY(-2px); background: rgba(20, 16, 23, .06); }
+.cap-icon svg { width: 24px; height: 24px; }
+/* 标题与说明共用第 2~3 列：左缘天然对齐，中间那条空白带也就没了 */
+.cap h3 { grid-column: 2 / span 2; grid-row: 1; font-size: var(--t-title); line-height: 1.04; }
+.cap p { grid-column: 2 / span 2; grid-row: 2; font-size: var(--t-lead); color: var(--muted); }
+/* 右侧示意图（内联 SVG，仍是零外部请求） */
+.cap-art {
+  grid-column: 4; grid-row: 1 / span 2; align-self: center;
+  width: 100%; max-width: 230px; justify-self: end;
+  color: var(--cap-col); opacity: .72;
+}
+.cap-art svg { width: 100%; height: auto; display: block; }
+/* 四条错开入场：一起淡入是看不出动效的，错开才有「一行一行进来」的感觉 */
+.caps-grid .cap:nth-child(1) { transition-delay: 0ms; }
+.caps-grid .cap:nth-child(2) { transition-delay: 90ms; }
+.caps-grid .cap:nth-child(3) { transition-delay: 180ms; }
+.caps-grid .cap:nth-child(4) { transition-delay: 270ms; }
 
 /* ---------- 收束：一整块色场 ---------- */
 .cta {
@@ -519,8 +557,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   .hero-art { min-height: clamp(470px, 112vw, 660px); }
   .art-frame { inset: 0; }
   .glass { top: auto; bottom: clamp(12px, 3vw, 22px); }
-  /* 能力条目：窄屏改成标题在上、说明在下 */
-  .cap { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  /* 能力条目：窄屏改成图标 + 标题在上、说明在下；示意图隐藏（手机上一屏太挤） */
+  .cap { grid-template-columns: 46px minmax(0, 1fr); gap: 8px 14px; }
+  .cap h3, .cap p { grid-column: 2; }
+  .cap-art { display: none; }
 }
 @media (max-width: 760px) {
   .nav { display: none; }
@@ -594,6 +634,18 @@ ul { margin: 0; padding: 0; list-style: none; }
             <span class="fancy-shadow" aria-hidden="true"></span>
           </span>
         </div>
+        <!-- 首屏左栏原来下班部分大片留白，这里用已内联的模型标填上（不新增任何外部请求） -->
+        <div class="hero-marks" data-anim>
+          <span class="hero-marks-label">已接入</span>
+          <svg aria-hidden="true"><use href="#lg-deepseek"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-qwen"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-chatglm"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-doubao"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-minimax"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-stepfun"></use></svg>
+          <svg aria-hidden="true"><use href="#lg-wenxin"></use></svg>
+        </div>
       </div>
 
       <div class="hero-art" data-anim>
@@ -636,31 +688,31 @@ ul { margin: 0; padding: 0; list-style: none; }
       <div class="marquee">
         <div class="marquee-track">
           <!-- 第一遍：对读屏可见，模型名就在各自标记下方 -->
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div>
-        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div>
-          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免把 3D 倾斜覆盖掉 -->
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div>
-        <div class="model-cell" aria-hidden="true"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div></div>
+        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div></div>
+          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免重复动效 -->
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-chatglm"></use></svg><span>智谱 GLM</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-hunyuan"></use></svg><span>腾讯混元</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-minimax"></use></svg><span>MiniMax</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-deepseek"></use></svg><span>DeepSeek</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-moonshot"></use></svg><span>Kimi</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-qwen"></use></svg><span>通义千问</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-doubao"></use></svg><span>豆包</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-wenxin"></use></svg><span>文心一言</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-stepfun"></use></svg><span>阶跃星辰</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-openai"></use></svg><span>OpenAI</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-claude"></use></svg><span>Claude</span></div></div>
+        <div class="model-slot" aria-hidden="true"><div class="model-cell"><svg aria-hidden="true"><use href="#lg-gemini"></use></svg><span>Gemini</span></div></div>
         </div>
       </div>
       <!-- LOGOS:END -->
@@ -670,20 +722,78 @@ ul { margin: 0; padding: 0; list-style: none; }
   <section class="caps">
     <div class="wrap caps-grid">
       <article class="cap" data-anim>
+        <span class="cap-icon" aria-hidden="true">
+          <!-- 三路汇成一路：统一接入 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 5h4l5 7"/><path d="M3 12h9"/><path d="M3 19h4l5-7"/><path d="M13 12h8"/></svg>
+        </span>
         <h3>统一接入</h3>
         <p>一套 OpenAI 兼容协议，现有 SDK 改一行 Base URL 就能接上。</p>
+        <span class="cap-art" aria-hidden="true">
+          <!-- 多家上游 → 一个网关 → 一路输出 -->
+          <svg viewBox="0 0 230 120" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="12" width="52" height="20" rx="7"/><rect x="6" y="50" width="52" height="20" rx="7"/><rect x="6" y="88" width="52" height="20" rx="7"/>
+            <path d="M58 22h22c9 0 11 24 20 32"/><path d="M58 60h42"/><path d="M58 98h22c9 0 11-24 20-32"/>
+            <rect x="122" y="42" width="54" height="36" rx="11"/>
+            <path d="M176 60h26"/><path d="M196 53l7 7-7 7"/>
+          </svg>
+        </span>
       </article>
       <article class="cap" data-anim>
+        <span class="cap-icon" aria-hidden="true">
+          <!-- 一路分多路：多渠道调度 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4"/><circle cx="9" cy="12" r="2"/><path d="M11 12h3c1.5 0 2-1 2.6-2.2S18 7 19.5 7H21"/><path d="M11 12h3c1.5 0 2 1 2.6 2.2S18 17 19.5 17H21"/></svg>
+        </span>
         <h3>多渠道调度</h3>
         <p>上游抖动时自动换道重试，每次切换都写进调用记录。</p>
+        <span class="cap-art" aria-hidden="true">
+          <!-- 一路分三路，其中一路失败并回退重试 -->
+          <svg viewBox="0 0 230 120" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="6" y="46" width="46" height="28" rx="9"/>
+            <path d="M52 60h18"/><circle cx="78" cy="60" r="7"/>
+            <path d="M85 60h16c9 0 11-28 20-34"/><path d="M85 60h36"/><path d="M85 60h16c9 0 11 28 20 34"/>
+            <rect x="126" y="10" width="54" height="22" rx="8"/>
+            <rect x="126" y="49" width="54" height="22" rx="8"/>
+            <rect x="126" y="88" width="54" height="22" rx="8" stroke-dasharray="4 5"/>
+            <path d="M180 99h18"/><path d="M193 93l6 6-6 6"/>
+          </svg>
+        </span>
       </article>
       <article class="cap" data-anim>
+        <span class="cap-icon" aria-hidden="true">
+          <!-- 逐条柱状：用量透明 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V11"/><path d="M11 21V4"/><path d="M16 21v-6"/><path d="M21 21v-9"/></svg>
+        </span>
         <h3>用量透明</h3>
         <p>模型、渠道、令牌数、耗时逐条可查，账单能直接核对。</p>
+        <span class="cap-art" aria-hidden="true">
+          <!-- 逐条柱状 + 走势线 -->
+          <svg viewBox="0 0 230 120" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 106h206"/>
+            <rect x="26" y="62" width="18" height="44" rx="5"/><rect x="58" y="38" width="18" height="68" rx="5"/>
+            <rect x="90" y="78" width="18" height="28" rx="5"/><rect x="122" y="26" width="18" height="80" rx="5"/>
+            <path d="M156 92l18-24 16 13 22-38"/>
+            <circle cx="212" cy="43" r="3.5"/>
+          </svg>
+        </span>
       </article>
       <article class="cap" data-anim>
+        <span class="cap-icon" aria-hidden="true">
+          <!-- 锁：密钥可控 -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="10" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/><path d="M12 14v2"/></svg>
+        </span>
         <h3>密钥可控</h3>
         <p>令牌按项目分级授权，配额与限流都挂在令牌上。</p>
+        <span class="cap-art" aria-hidden="true">
+          <!-- 令牌 → 作用域 → 上锁 -->
+          <svg viewBox="0 0 230 120" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="12" y="34" width="86" height="52" rx="14"/>
+            <circle cx="38" cy="60" r="8"/><path d="M46 60h32"/><path d="M70 60v12"/><path d="M79 60v9"/>
+            <path d="M106 60h20" stroke-dasharray="5 6"/>
+            <rect x="134" y="36" width="60" height="48" rx="14"/>
+            <path d="M150 36v-6a14 14 0 0 1 28 0v6"/>
+            <circle cx="164" cy="60" r="6"/><path d="M164 66v9"/>
+          </svg>
+        </span>
       </article>
     </div>
   </section>
@@ -716,7 +826,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 01:32</span>
+      <span class="foot-stamp">预览版 2026-10-17 01:38</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>

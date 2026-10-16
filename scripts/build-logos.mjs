@@ -69,7 +69,7 @@ for (const { slug, name } of DISPLAY) {
         : '')
   )
   cells.push(
-    `        <div class="model-cell" data-anim><svg aria-hidden="true"><use href="#lg-${slug}"></use></svg><span>${name}</span></div>`
+    `        <div class="model-slot" data-anim><div class="model-cell"><svg aria-hidden="true"><use href="#lg-${slug}"></use></svg><span>${name}</span></div></div>`
   )
 }
 
@@ -82,10 +82,10 @@ const block = [
   '        <div class="marquee-track">',
   '          <!-- 第一遍：对读屏可见，模型名就在各自标记下方 -->',
   ...cells,
-  '          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免把 3D 倾斜覆盖掉 -->',
+  '          <!-- 第二遍：只为让滚动无缝，对读屏隐藏；不加入场动画，避免重复动效 -->',
   ...cells.map((line) =>
     line
-      .replace('<div class="model-cell"', '<div class="model-cell" aria-hidden="true"')
+      .replace('<div class="model-slot"', '<div class="model-slot" aria-hidden="true"')
       .replace(' data-anim', '')
   ),
   '        </div>',
