@@ -303,7 +303,9 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a:hover { background: var(--fill); }
 
 /* ---------- 右侧品牌图形（元素取自品牌图标本身） ---------- */
-.brand-shape { position: absolute; inset: 0; }
+/* 关键：.art-frame 向右出血了 16vw，形状必须收回来，
+   否则会被摆到视口外、只露出被切掉的一半 */
+.brand-shape { position: absolute; inset: 0 16vw 0 0; }
 .bs-bar {
   position: absolute; display: block;
   height: clamp(50px, 6.2vw, 90px);
@@ -313,7 +315,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .bs-bar-a {
   left: 4%; top: 27%; width: min(72%, 480px);
   transform: rotate(-19deg);
-  animation: bs-drift-a 28s ease-in-out infinite;
+  animation: bs-drift-a 13s ease-in-out infinite;
   background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* taste-skill-ignore 取自品牌图标自身的渐变，是「参考图标元素」这条要求的实现 */
   box-shadow: 0 26px 60px -34px rgba(18, 58, 134, .6); /* taste-skill-ignore 同一图形的柔和投影 */
 }
@@ -321,7 +323,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .bs-bar-b {
   left: 20%; top: 49%; width: min(60%, 400px);
   transform: rotate(23deg);
-  animation: bs-drift-b 34s ease-in-out infinite;
+  animation: bs-drift-b 17s ease-in-out infinite;
   background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* taste-skill-ignore 同上，同一套品牌梯度 */
   opacity: .85;
 }
@@ -330,20 +332,20 @@ ul { margin: 0; padding: 0; list-style: none; }
   position: absolute; left: 2%; top: 16%; width: min(78%, 520px); aspect-ratio: 1;
   border-radius: 50%;
   background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .3) 0%, rgba(34, 167, 232, .09) 46%, rgba(34, 167, 232, 0) 72%); /* taste-skill-ignore 同上，给图形一层气晕 */
-  animation: bs-pulse 22s ease-in-out infinite;
+  animation: bs-pulse 11s ease-in-out infinite;
 }
 /* 缓慢漂移：位移很小、周期很长，是"环境在动"而不是"元素在跳" */
 @keyframes bs-drift-a {
   0%, 100% { transform: rotate(-19deg) translate3d(0, 0, 0); }
-  50%      { transform: rotate(-15deg) translate3d(16px, -14px, 0); }
+  50%      { transform: rotate(-11deg) translate3d(54px, -40px, 0); }
 }
 @keyframes bs-drift-b {
   0%, 100% { transform: rotate(23deg) translate3d(0, 0, 0); }
-  50%      { transform: rotate(27deg) translate3d(-14px, 12px, 0); }
+  50%      { transform: rotate(32deg) translate3d(-46px, 34px, 0); }
 }
 @keyframes bs-pulse {
-  0%, 100% { opacity: .85; transform: scale(1); }
-  50%      { opacity: 1;   transform: scale(1.06); }
+  0%, 100% { opacity: .8; transform: scale(1); }
+  50%      { opacity: 1;  transform: scale(1.12); }
 }
 @media (prefers-reduced-motion: reduce) {
   .bs-bar-a, .bs-bar-b, .bs-glow { animation: none; }
@@ -1078,7 +1080,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 04:16</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:22</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -1117,7 +1119,7 @@ document.documentElement.classList.add('js');
       var y = window.scrollY || 0;
       /* 出了首屏就不再动它 */
       if (y > window.innerHeight * 1.6) { shape.style.transform = ''; return; }
-      shape.style.transform = 'translate3d(0,' + (y * 0.09).toFixed(1) + 'px,0) rotate(' + (y * 0.012).toFixed(2) + 'deg)';
+      shape.style.transform = 'translate3d(0,' + (y * 0.26).toFixed(1) + 'px,0) rotate(' + (y * 0.035).toFixed(2) + 'deg)';
     }
     /* 直接在滚动事件里赋值，不经 rAF：一次 transform 赋值开销可忽略，
        而且无头环境下 rAF 不跑，走 rAF 会让这段逻辑没法被验证 */
