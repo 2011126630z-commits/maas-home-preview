@@ -21,6 +21,7 @@ const here = dirname(fileURLToPath(import.meta.url))
 const indexPath = join(here, '..', 'index.html')
 const raw = readFileSync(indexPath, 'utf8')
 
+const SENDABLE_NAME = '君骄数智-首页预览.html'
 const ORIGINAL_PROJECT_URL = 'https://github.com/QuantumNous/new-api'
 const NOTICE_SENTENCE =
   'Frontend design and development by New API contributors.'
@@ -270,6 +271,17 @@ test('结构合法：标签闭合且 id 唯一', () => {
   const ids = [...html.matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])
   const duplicates = ids.filter((id, i) => ids.indexOf(id) !== i)
   assert.deepEqual(duplicates, [], `id 重复：${[...new Set(duplicates)].join(', ')}`)
+})
+
+test('可发送的单文件与 index.html 逐字节一致', () => {
+  // 交付形式是「一个 HTML 文件，发给对方双击就能看」：
+  // 仓库里 index.html 是 Pages 入口，这份是给人直接发送的副本，内容必须完全相同。
+  const sendable = join(here, '..', SENDABLE_NAME)
+  assert.ok(existsSync(sendable), `缺少可直接发送的单文件：${SENDABLE_NAME}（跑 npm run sendable 生成）`)
+  assert.ok(
+    readFileSync(sendable).equals(readFileSync(indexPath)),
+    `${SENDABLE_NAME} 与 index.html 不一致，请跑 npm run sendable 重新生成`
+  )
 })
 
 test('图片只允许内联，不引第三方素材或远程字体', () => {
