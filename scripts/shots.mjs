@@ -21,20 +21,27 @@ const EDGE_CANDIDATES = [
 ]
 
 /**
- * 高度说明：full 系列的高度是本页当前真实内容高度（1440→1919、768→1776、390→1725 实测），
- * 改版后如内容变长，需重新实测并更新，避免长图被截断。
+ * 尺寸说明：
+ *  - height 省略（或 fill: true）= 先量真实内容高度再按该高度截图，避免写死的高度过期后被截断。
+ *    量的方式见 scripts/measure.html（宽度精确的 iframe + 读 scrollHeight）。
+ *  - emulate: true —— Windows 下无头浏览器开不出窄于 ~500px 的窗口，直接截图会把 500px 的
+ *    排版裁成 390px，看起来"右边被切掉"。所以把页面放进一个宽度精确等于目标宽度的 iframe 里
+ *    再截外层，等价于真实设备视口（媒体查询、100vw、position:fixed 都按 iframe 视口计算）。
  *
- * emulate: true —— Windows 下无头浏览器开不出窄于 ~500px 的窗口，直接截图会把 500px 的
- * 排版裁成 390px，看起来"右边被切掉"。所以把页面放进一个宽度精确等于目标宽度的 iframe 里
- * 再截外层，等价于真实设备视口（媒体查询、100vw、position:fixed 都按 iframe 视口计算）。
+ * CHROME_PX：实测 headless=new 里 --window-size 含约 110px 的"浏览器外壳"，
+ * 也就是视口 = window - 110。不加这个补偿，长图底部会被悄悄裁掉一截（曾把页脚署名裁没）。
  */
+const CHROME_PX = 130
+
 const SHOTS = [
   { name: 'desktop-1440', width: 1440, height: 1000 },
-  { name: 'desktop-full-1440', width: 1440, height: 1960 },
-  { name: 'tablet-768', width: 768, height: 1810 },
-  { name: 'mobile-390', width: 390, height: 1760, emulate: true },
+  { name: 'desktop-full-1440', width: 1440, fill: true },
+  { name: 'tablet-768', width: 768, fill: true },
+  { name: 'mobile-390', width: 390, fill: true, emulate: true },
   { name: 'state-sent', width: 1440, height: 1000, query: '&demo=sent' },
 ]
+
+const measurePage = join(here, 'measure.html')
 
 function findBrowser() {
   const found = EDGE_CANDIDATES.find((path) => existsSync(path))
@@ -60,7 +67,41 @@ const pageUrl = pathToFileURL(target).href + '?no-anim=1'
 const profileDir = join(tmpdir(), `junjiao-shots-${process.pid}`)
 const failures = []
 
+/** 用 measure.html 量出目标页在指定宽度下的真实内容高度 */
+function measureHeight(width, shotUrl) {
+  const probe = `${pathToFileURL(measurePage).href}?w=${width}&src=${encodeURIComponent(shotUrl)}`
+  const result = spawnSync(
+    browser,
+    [
+      '--headless=new',
+      '--disable-gpu',
+      '--no-first-run',
+      '--no-default-browser-check',
+      `--user-data-dir=${profileDir}`,
+      '--window-size=1600,1800',
+      '--virtual-time-budget=6000',
+      '--allow-file-access-from-files',
+      '--dump-dom',
+      probe,
+    ],
+    { stdio: 'pipe', encoding: 'utf8' }
+  )
+  const match = (result.stdout || '').match(/H=(\d+)/)
+  if (!match) return null
+  return Number(match[1])
+}
+
 for (const shot of SHOTS) {
+  if (shot.fill && !shot.height) {
+    const measured = measureHeight(shot.width, pageUrl + (shot.query ?? ''))
+    if (!measured) {
+      failures.push(`${shot.name}: 量高度失败，已跳过（可显式指定 height）`)
+      continue
+    }
+    shot.height = measured + 12
+    console.log(`· ${shot.name} 量得内容高度 ${measured}px → 按 ${shot.height}px 截图`)
+  }
+
   const outFile = join(outDir, `${shot.name}.png`)
   const shotUrl = pageUrl + (shot.query ?? '')
 
@@ -88,7 +129,7 @@ for (const shot of SHOTS) {
       '--no-default-browser-check',
       '--force-device-scale-factor=1',
       `--user-data-dir=${profileDir}`,
-      `--window-size=${shot.width},${shot.height}`,
+      `--window-size=${shot.width},${shot.height + CHROME_PX}`,
       '--virtual-time-budget=3000',
       `--allow-file-access-from-files`,
       `--screenshot=${outFile}`,
