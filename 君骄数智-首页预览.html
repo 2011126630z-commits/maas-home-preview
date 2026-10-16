@@ -302,58 +302,53 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: var(--fill); }
 
-/* ---------- 右侧品牌图形（元素取自品牌图标本身） ---------- */
-/* 整页常驻：固定铺满视口、压在正文之下（正文 z-index 1），滚动时一直在 */
-.brand-shape { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .82; filter: saturate(1.12); }
+/* ---------- 整页常驻的品牌色体 ----------
+   参考站的效果是「一大块柔和、有机、多色的渐变体，缓慢变形并随滚动移动」，
+   不是把 logo 原样印上去。这里用品牌色做同样的效果：
+   青 → 亮蓝 → 深蓝 → 一点紫，边缘靠 border-radius 的有机形态 + 轻微模糊柔化。 */
+.brand-shape { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .55; filter: saturate(1.1); }
 body > *:not(.brand-shape) { position: relative; z-index: 1; }
-.bs-bar {
-  position: absolute; display: block;
-  height: clamp(50px, 6.2vw, 90px);
-  border-radius: 999px;
+
+.bs-blob {
+  position: absolute;
+  left: 55%; top: 12%;
+  width: min(48%, 660px); aspect-ratio: 1 / 1.06;
+  border-radius: 58% 42% 47% 53% / 52% 58% 42% 48%;
+  background:
+    radial-gradient(62% 62% at 24% 20%, rgba(111, 220, 255, .95) 0%, rgba(111, 220, 255, 0) 62%), /* taste-skill-ignore 同上：品牌色体的多层渐变 */
+    radial-gradient(58% 58% at 80% 32%, rgba(34, 167, 232, .9) 0%, rgba(34, 167, 232, 0) 64%), /* taste-skill-ignore 同上 */
+    radial-gradient(66% 66% at 58% 84%, rgba(29, 111, 214, .95) 0%, rgba(29, 111, 214, 0) 66%), /* taste-skill-ignore 同上 */
+    radial-gradient(46% 46% at 16% 78%, rgba(124, 92, 255, .5) 0%, rgba(124, 92, 255, 0) 68%), /* taste-skill-ignore 同上 */
+    linear-gradient(152deg, #7fe0ff 0%, #2f8fe8 46%, #15407f 100%); /* taste-skill-ignore 参考站那种多色渐变体，是客户指定的效果 */
+  filter: blur(1.5px); /* taste-skill-ignore 同上，柔化边缘 */
+  animation: blob-morph 19s ease-in-out infinite, blob-drift 27s ease-in-out infinite;
 }
-/* 主笔画：青 → 品牌蓝 → 深蓝，就是图标自身的梯度 */
-.bs-bar-a {
-  left: 54%; top: 26%; width: min(27%, 400px);
-  transform: rotate(-19deg);
-  animation: bs-drift-a 9s ease-in-out infinite;
-  background: linear-gradient(96deg, #6fdcff 0%, #22a7e8 32%, #1d6fd6 64%, #14367e 100%); /* taste-skill-ignore 取自品牌图标自身的渐变，是「参考图标元素」这条要求的实现 */
-  box-shadow: 0 26px 60px -34px rgba(18, 58, 134, .6); /* taste-skill-ignore 同一图形的柔和投影 */
+/* 缓慢改变轮廓：这是"活着"的关键，参考站那块也在持续变形 */
+@keyframes blob-morph {
+  0%, 100% { border-radius: 58% 42% 47% 53% / 52% 58% 42% 48%; }
+  33%      { border-radius: 43% 57% 63% 37% / 45% 43% 57% 55%; }
+  66%      { border-radius: 53% 47% 37% 63% / 61% 51% 49% 39%; }
 }
-/* 副笔画：与主笔画交叉，呼应图标里那两笔的结构 */
-.bs-bar-b {
-  left: 62%; top: 52%; width: min(23%, 340px);
-  transform: rotate(23deg);
-  animation: bs-drift-b 12s ease-in-out infinite;
-  background: linear-gradient(96deg, #9fe8ff 0%, #3fb0ea 46%, #1b5fc0 100%); /* taste-skill-ignore 同上，同一套品牌梯度 */
-  opacity: .85;
+@keyframes blob-drift {
+  0%, 100% { transform: rotate(-11deg) scale(1); }
+  50%      { transform: rotate(-3deg) scale(1.07); }
 }
-/* 一层气晕，让图形有体积而不是两条色带 */
 .bs-glow {
-  position: absolute; left: 52%; top: 16%; width: min(30%, 430px); aspect-ratio: 1;
+  position: absolute; left: 50%; top: 6%; width: min(56%, 800px); aspect-ratio: 1;
   border-radius: 50%;
-  background: radial-gradient(circle at 44% 42%, rgba(34, 167, 232, .2) 0%, rgba(34, 167, 232, .06) 46%, rgba(34, 167, 232, 0) 72%); /* taste-skill-ignore 同上，给图形一层气晕 */
-  animation: bs-pulse 11s ease-in-out infinite;
-}
-/* 缓慢漂移：位移很小、周期很长，是"环境在动"而不是"元素在跳" */
-@keyframes bs-drift-a {
-  0%, 100% { transform: rotate(-19deg) translate3d(0, 0, 0); }
-  50%      { transform: rotate(-5deg) translate3d(120px, -90px, 0); }
-}
-@keyframes bs-drift-b {
-  0%, 100% { transform: rotate(23deg) translate3d(0, 0, 0); }
-  50%      { transform: rotate(38deg) translate3d(-100px, 78px, 0); }
+  background: radial-gradient(circle at 46% 44%, rgba(34, 167, 232, .24) 0%, rgba(34, 167, 232, .07) 48%, rgba(34, 167, 232, 0) 74%); /* taste-skill-ignore 同上，色体外围的气晕 */
+  animation: bs-pulse 13s ease-in-out infinite;
 }
 @keyframes bs-pulse {
   0%, 100% { opacity: .8; transform: scale(1); }
-  50%      { opacity: 1;  transform: scale(1.12); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bs-bar-a, .bs-bar-b, .bs-glow { animation: none; }
+  50%      { opacity: 1;  transform: scale(1.1); }
 }
 @media (max-width: 1040px) {
-  .bs-bar-a { left: 8%; top: 30%; width: 64%; }
-  .bs-bar-b { left: 24%; top: 52%; width: 54%; }
-  .bs-glow { left: 6%; top: 20%; width: 68%; }
+  .bs-blob { left: 44%; top: 18%; width: 78%; }
+  .bs-glow { left: 34%; top: 12%; width: 92%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bs-blob, .bs-glow { animation: none; }
 }
 
 /* ---------- 首屏 ---------- */
@@ -758,8 +753,7 @@ body > *:not(.brand-shape) { position: relative; z-index: 1; }
      固定铺满视口、压在正文之下，滚动时缓慢位移旋转 —— 参考站那种"滑过也还在"的效果。 -->
 <div class="brand-shape" aria-hidden="true">
   <span class="bs-glow"></span>
-  <span class="bs-bar bs-bar-a"></span>
-  <span class="bs-bar bs-bar-b"></span>
+  <span class="bs-blob"></span>
 </div>
 
 <a class="skip-link" href="#main">跳到主要内容</a>
@@ -869,15 +863,7 @@ body > *:not(.brand-shape) { position: relative; z-index: 1; }
       </div>
 
       <div class="hero-art" data-anim>
-        <div class="art-frame" aria-hidden="true">
-          <!-- 右侧视觉：取自品牌图标本身的元素 —— 老板的标是「青→深蓝渐变 + 粗圆角笔画」，
-               把配色、圆角、笔画角度抽出做成抽象图形（不是搬参考站的色块） -->
-          <div class="brand-shape">
-            <span class="bs-glow"></span>
-            <span class="bs-bar bs-bar-a"></span>
-            <span class="bs-bar bs-bar-b"></span>
-          </div>
-        </div>
+        <div class="art-frame" aria-hidden="true"></div>
 
         <div class="glass" data-ui>
           <p class="glass-head" aria-hidden="true">GATEWAY · LIVE · RAW 01 / 03</p>
@@ -1089,7 +1075,7 @@ body > *:not(.brand-shape) { position: relative; z-index: 1; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 04:30</span>
+      <span class="foot-stamp">预览版 2026-10-17 04:37</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
