@@ -188,7 +188,7 @@ ul { margin: 0; padding: 0; list-style: none; }
    注意必须写复合选择器：变体若与 .fancy-btn 同特异性又排在前面，会被基类覆盖，
    结果就是「白字落在白玻璃上」的隐形按钮。 */
 .fancy-btn.fancy-btn-solid {
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .22), rgba(255, 255, 255, .08)), var(--ink); /* taste-skill-ignore 同上：主按钮的玻璃高光层 */
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .06), rgba(255, 255, 255, .14), rgba(255, 255, 255, .06)), var(--ink); /* taste-skill-ignore 同上：主按钮的玻璃高光层 */
 }
 /* 深色按钮上的扫光要收窄：screen 混合在深底上会被放大成一道白糊 */
 .fancy-btn.fancy-btn-solid .fancy-label::after {
@@ -202,7 +202,7 @@ ul { margin: 0; padding: 0; list-style: none; }
 .fancy-btn-solid::after { --angle-1: 40deg; }
 /* 深色带上的玻璃按钮：同一套材质，文字转白、投影换成微弱白光 */
 .fancy-wrap-on-dark .fancy-btn {
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .28), rgba(255, 255, 255, .1)); /* taste-skill-ignore 同上：深底上的玻璃高光层 */
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .16), rgba(255, 255, 255, .07)); /* taste-skill-ignore 同上：深底上的玻璃高光层（压低峰值，避免中间一半发亮） */
 }
 .fancy-wrap-on-dark .fancy-label { color: var(--canvas); }
 .fancy-wrap-on-dark .fancy-shadow::after {
@@ -213,7 +213,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   cursor: pointer; position: relative; z-index: 3; box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
   border-radius: var(--pill);
-  background: linear-gradient(-75deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .2), rgba(255, 255, 255, .05)); /* taste-skill-ignore 玻璃按钮的高光层，是 brief 里「高级感」的来源 */
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .05), rgba(255, 255, 255, .13), rgba(255, 255, 255, .05)); /* taste-skill-ignore 玻璃按钮的高光层，是 brief 里「高级感」的来源 */
   box-shadow: inset 0 0.125em 0.125em rgba(0, 0, 0, .05), inset 0 -0.125em 0.125em rgba(255, 255, 255, .5), 0 0.25em 0.125em -0.125em rgba(0, 0, 0, .2), 0 0 0.1em 0.25em inset rgba(255, 255, 255, .2); /* taste-skill-ignore 同上：内高光加外投影才做出玻璃的厚度 */
   backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 玻璃按钮需要磨砂背景层 */
   -webkit-backdrop-filter: blur(clamp(1px, 0.125em, 4px)); /* taste-skill-ignore 同上，Safari 前缀 */
@@ -259,7 +259,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   width: calc(100% + 1px); height: calc(100% + 1px);
   top: calc(0% - 0.5px); left: calc(0% - 0.5px);
   padding: 1px; box-sizing: border-box;
-  background: conic-gradient(from var(--angle-1) at 50% 50%, rgba(0, 0, 0, .5), rgba(0, 0, 0, 0) 5% 40%, rgba(0, 0, 0, .5) 50%, rgba(0, 0, 0, 0) 60% 95%, rgba(0, 0, 0, .5)), linear-gradient(180deg, rgba(255, 255, 255, .5), rgba(255, 255, 255, .5)); /* taste-skill-ignore 同上：玻璃边缘的高光描边 */
+  background: conic-gradient(from var(--angle-1) at 50% 50%, rgba(255, 255, 255, .34), rgba(255, 255, 255, .12) 5% 40%, rgba(255, 255, 255, .34) 50%, rgba(255, 255, 255, .12) 60% 95%, rgba(255, 255, 255, .34)), linear-gradient(180deg, rgba(255, 255, 255, .22), rgba(255, 255, 255, .22)); /* taste-skill-ignore 同上：玻璃边缘的高光描边（深色页上改白色系，避免半圈发黑） */
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* taste-skill-ignore 同上，只留 1px 边框 */
   mask-composite: exclude;
   box-shadow: inset 0 0 0 0.5px rgba(255, 255, 255, .5); /* taste-skill-ignore 同上，边框内侧再补一道高光 */
@@ -957,7 +957,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 02:05</span>
+      <span class="foot-stamp">预览版 2026-10-17 02:42</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
