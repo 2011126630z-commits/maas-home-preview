@@ -147,11 +147,23 @@ ul { margin: 0; padding: 0; list-style: none; }
 .menu ul {
   position: absolute; right: 0; top: 100%; min-width: 12rem;
   display: grid; gap: 4px; padding: 12px;
-  background: rgba(255, 255, 255, .92); border: 1px solid var(--glass-line);
+  background: rgba(255, 255, 255, .97); border: 1px solid var(--glass-line);
   border-radius: 20px;
   box-shadow: 0 24px 50px -24px rgba(40, 20, 45, .45); /* taste-skill-ignore 真正的浮层（下拉菜单） */
   backdrop-filter: blur(18px); /* taste-skill-ignore 同上，浮层需与其下内容分离 */
+  transform-origin: top right;
+  transition: opacity .24s ease, transform .24s cubic-bezier(.16, 1, .3, 1);
 }
+/* <details> 折叠时是 UA 用 content-visibility 隐藏的，普通 transition 抓不到这次切换。
+   进场用 keyframes，且**起始态就是可见的**（0.55 不透明度）：
+   即使动画因任何原因不推进（后台标签页、无头截图、禁用动画），菜单依然能读能点，
+   最坏情况只是少了一次淡入，绝不会变成隐形菜单。 */
+.menu[open] ul { animation: menu-in .24s cubic-bezier(.16, 1, .3, 1); }
+@keyframes menu-in {
+  from { opacity: .55; transform: translateY(-10px) scale(.97); }
+}
+/* 收场：JS 挂类播完再真正折叠（用定时器，不依赖 rAF） */
+.menu.is-closing ul { opacity: 0; transform: translateY(-10px) scale(.96); pointer-events: none; }
 .menu a { display: block; padding: 10px 12px; border-radius: 14px; font-size: var(--t-lead); }
 .menu a:hover { background: rgba(20, 16, 23, .05); }
 
@@ -392,6 +404,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   .js [data-anim] { opacity: 1; transform: none; transition: none; }
   .btn:hover { transform: none; }
   #petals { display: none; }
+  .menu ul { transition: none; }
 }
 
 /* ---------- 响应式 ---------- */
@@ -399,7 +412,10 @@ ul { margin: 0; padding: 0; list-style: none; }
   /* 单列后横向空间变大，标题该长回来 */
   :root { --t-display: clamp(2.7rem, 9vw, 4.4rem); }
   .hero-grid { grid-template-columns: minmax(0, 1fr); min-height: 0; }
-  .hero-art { min-height: clamp(340px, 58vw, 520px); }
+  /* 手机上首屏原来不到一屏、地球只有 340px：一滑就划过去了。
+     这里加高首屏留白与地球区，让一屏能完整落下首屏 */
+  .hero { padding-block: clamp(44px, 7vw, 76px) clamp(48px, 8vw, 92px); }
+  .hero-art { min-height: clamp(470px, 112vw, 660px); }
   .art-frame { inset: 0; }
   .glass { top: auto; bottom: clamp(12px, 3vw, 22px); }
   /* 能力条目：窄屏改成标题在上、说明在下 */
@@ -596,7 +612,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 01:03</span>
+      <span class="foot-stamp">预览版 2026-10-17 01:11</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
@@ -627,13 +643,44 @@ document.documentElement.classList.add('js');
     if (toastTimer) clearTimeout(toastTimer);
     toastTimer = setTimeout(function () { toastEl.setAttribute('data-show', 'false'); }, 2400);
   }
+  /* ---------- 手机菜单：开合都要有过渡 ---------- */
+  var menuEl = document.querySelector('.menu');
+  var closeMenuTimer = null;
+  function closeMenu() {
+    if (!menuEl || !menuEl.open || menuEl.classList.contains('is-closing')) return;
+    menuEl.classList.add('is-closing');            /* 先播收场动画 */
+    if (closeMenuTimer) clearTimeout(closeMenuTimer);
+    closeMenuTimer = setTimeout(function () {
+      menuEl.open = false;
+      menuEl.classList.remove('is-closing');
+      closeMenuTimer = null;
+    }, 230);
+  }
+  if (menuEl) {
+    var menuSummary = menuEl.querySelector('summary');
+    if (menuSummary) {
+      menuSummary.addEventListener('click', function (event) {
+        if (!menuEl.open) return;                  /* 打开交给 <details> 原生行为，进场由 CSS keyframes 播 */
+        event.preventDefault();                    /* 收起：拦下来先播动画 */
+        closeMenu();
+      });
+    }
+    /* 点空白处收起 */
+    document.addEventListener('pointerdown', function (event) {
+      if (menuEl.open && !menuEl.contains(event.target)) closeMenu();
+    }, true);
+    /* 滚动时收起（手机上这是常规预期，且现在是有动画地收起） */
+    window.addEventListener('scroll', function () {
+      if (menuEl.open) closeMenu();
+    }, { passive: true });
+  }
+
   document.addEventListener('click', function (event) {
     var demo = event.target.closest ? event.target.closest('[data-demo]') : null;
     if (!demo) return;
     event.preventDefault();
     showToast(demo.getAttribute('data-demo'));
-    var menu = document.querySelector('.menu');
-    if (menu) menu.open = false;
+    closeMenu();
   });
 
   /* ---------- 顶栏：滚过首屏后变玻璃胶囊 ---------- */
@@ -768,10 +815,19 @@ document.documentElement.classList.add('js');
     var pactive = false;                  /* 还有粒子没归位时为 true */
     var pointer = { x: 0, y: 0, active: false };
 
-    function gStep(h) {
+    /* 球体几何只在这里算：窄屏球更大、位置略上移（手机上首屏矮，球要占住画面） */
+    function gGeom() {
+      var narrow = gw < 560;
+      return {
+        cx: gw / 2,
+        cy: gh * (narrow ? 0.42 : 0.44),
+        r: Math.min(gw, gh) * (narrow ? 0.47 : 0.38),
+      };
+    }
+
+    function gStep(h, pr) {
       var damp = Math.exp(-h * dragCoef);
       var pull = pointer.active ? cursorPull : 0;
-      var pr = Math.min(gw, gh) * 0.38 * 1.05;   /* 光标影响半径 */
       var settled = true;
       for (var i = 0; i < pn; i++) {
         var k = i * 3;
@@ -810,15 +866,15 @@ document.documentElement.classList.add('js');
       /* 固定步长子步进：帧间隔再大也按真实时间推进，不会"跑不满时间" */
       var steps = Math.max(1, Math.min(16, Math.ceil(dt / PHYS_STEP)));
       var h = dt / steps;
+      var pr = gGeom().r * 1.05;   /* 光标影响半径 */
       var settled = false;
-      for (var s = 0; s < steps; s++) settled = gStep(h);
+      for (var s = 0; s < steps; s++) settled = gStep(h, pr);
       pactive = !settled;
     }
 
     function gBlast(clickX, clickY) {
-      var cx = gw / 2, cy = gh * 0.44;
-      var radius = Math.min(gw, gh) * 0.38;
-      var R = radius * blastRadiusK;
+      var g = gGeom();
+      var R = g.r * blastRadiusK;
       for (var i = 0; i < pn; i++) {
         var dx = scr[i * 2] - clickX;
         var dy = scr[i * 2 + 1] - clickY;
@@ -839,8 +895,8 @@ document.documentElement.classList.add('js');
 
     function gDraw() {
       gctx.clearRect(0, 0, gw, gh);
-      var cx = gw / 2, cy = gh * 0.44;
-      var radius = Math.min(gw, gh) * 0.38;
+      var geom = gGeom();
+      var cx = geom.cx, cy = geom.cy, radius = geom.r;
       var cosA = Math.cos(gspin), sinA = Math.sin(gspin);
       var buckets = [[], [], [], []];
       var i, x, y, z, X, Y, Z, ty, tz, depth, bucket;

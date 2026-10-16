@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>LAYOUT=PENDING</title>
+<style>html,body{margin:0;padding:0;background:#fff}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!--
+  版面探针：量各区块在指定宽度下的 y 位置与高度，用于判断手机上"一屏能看到什么"。
+  用法：layout-probe.html?w=390&h=844&src=<encoded url>
+-->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 390);
+  var h = Number(q.get('h') || 844);
+  var frame = document.getElementById('frame');
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.src = q.get('src') || '';
+
+  var SEL = ['.masthead', '.hero', '.hero-art', '.models', '.caps', '.cta', '.foot'];
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      try {
+        var win = frame.contentWindow;
+        var doc = win.document;
+        out.push('视口=' + win.innerWidth + 'x' + win.innerHeight);
+        out.push('整页高=' + doc.documentElement.scrollHeight);
+        for (var i = 0; i < SEL.length; i++) {
+          var el = doc.querySelector(SEL[i]);
+          if (!el) { out.push(SEL[i] + '=无'); continue; }
+          var r = el.getBoundingClientRect();
+          out.push(
+            SEL[i] + ' y=' + Math.round(r.top + win.scrollY) + ' 高=' + Math.round(r.height)
+          );
+        }
+        // 一屏（视口高）能覆盖到哪
+        var hero = doc.querySelector('.hero');
+        var hr = hero.getBoundingClientRect();
+        out.push('首屏高占视口=' + (hr.height / win.innerHeight).toFixed(2) + ' 屏');
+      } catch (error) {
+        out.push('ERR=' + error.name + ':' + error.message);
+      }
+      document.title = 'LAYOUT=' + out.join(' | ');
+    }, 1200);
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>MENUSTYLE=PENDING</title>
+<style>html,body{margin:0;padding:0;background:#fff}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!-- 量菜单面板在"打开动画结束之后"的计算样式。用法：menu-style.html?w=390&src=... -->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var frame = document.getElementById('frame');
+  frame.style.width = Number(q.get('w') || 390) + 'px';
+  frame.style.height = Number(q.get('h') || 844) + 'px';
+  frame.src = q.get('src') || '';
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      try {
+        var win = frame.contentWindow;
+        var doc = win.document;
+        var menu = doc.querySelector('.menu');
+        var panel = menu.querySelector('ul');
+
+        function snap(tag) {
+          var cs = win.getComputedStyle(panel);
+          var links = panel.querySelectorAll('a');
+          var lcs = links.length ? win.getComputedStyle(links[0]) : null;
+          out.push(tag + ' opacity=' + cs.opacity + ' bg=' + cs.backgroundColor +
+            ' transform=' + cs.transform + ' visibility=' + cs.visibility +
+            ' contentVisibility=' + (cs.contentVisibility || '-') +
+            ' color=' + (lcs ? lcs.color : '-') +
+            ' font=' + (lcs ? lcs.fontSize : '-'));
+        }
+
+        out.push('menu.open 初始=' + menu.open + ' is-closing=' + menu.classList.contains('is-closing'));
+        menu.querySelector('summary').click();
+        snap('打开瞬间');
+        setTimeout(function () {
+          snap('打开+500ms');
+          setTimeout(function () {
+            snap('打开+1500ms');
+            out.push('menu.open=' + menu.open);
+            document.title = 'MENUSTYLE=' + out.join(' | ');
+          }, 1000);
+        }, 500);
+      } catch (error) {
+        out.push('ERR=' + error.name + ':' + error.message);
+        document.title = 'MENUSTYLE=' + out.join(' | ');
+      }
+    }, 1000);
+  });
+})();
+</script>
+</body>
+</html>

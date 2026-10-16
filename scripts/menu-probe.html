@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>MENU=PENDING</title>
+<style>html,body{margin:0;padding:0;background:#fff}iframe{display:block;border:0}</style>
+</head>
+<body>
+<!--
+  手机菜单行为探针：打开菜单 → 量下拉面板 → 滚动 → 再量一次。
+  用法：menu-probe.html?w=390&h=720&src=<encoded url>
+-->
+<iframe id="frame" scrolling="no"></iframe>
+<script>
+(function () {
+  'use strict';
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 390);
+  var h = Number(q.get('h') || 720);
+  var frame = document.getElementById('frame');
+  frame.style.width = w + 'px';
+  frame.style.height = h + 'px';
+  frame.src = q.get('src') || '';
+
+  function rectOf(win, el) {
+    if (!el) return 'null';
+    var r = el.getBoundingClientRect();
+    var cs = win.getComputedStyle(el);
+    return [
+      'top=' + Math.round(r.top),
+      'bottom=' + Math.round(r.bottom),
+      '可视=' + (r.bottom > 0 && r.top < win.innerHeight),
+      'opacity=' + cs.opacity,
+      'display=' + cs.display,
+      'position=' + cs.position,
+    ].join(' ');
+  }
+
+  frame.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      try {
+        var win = frame.contentWindow;
+        var doc = win.document;
+        var menu = doc.querySelector('.menu');
+        var summary = menu && menu.querySelector('summary');
+        var panel = menu && menu.querySelector('ul');
+        out.push('菜单存在=' + !!menu + ' 面板存在=' + !!panel);
+        out.push('折叠时面板=' + rectOf(win, panel));
+
+        summary.dispatchEvent(new win.PointerEvent('pointerdown', { bubbles: true }));
+        summary.click();
+        out.push('打开后 open=' + menu.open);
+        out.push('打开后面板=' + rectOf(win, panel));
+
+        // 再点一次：应当先挂 is-closing 播收场动画，再真正折叠
+        summary.click();
+        out.push('收起瞬间 is-closing=' + menu.classList.contains('is-closing') +
+          ' open=' + menu.open);
+        setTimeout(function () {
+          out.push('收起 +320ms open=' + menu.open +
+            ' is-closing=' + menu.classList.contains('is-closing'));
+
+          // 再打开一次，确认可以反复开合
+          summary.click();
+          out.push('再打开 open=' + menu.open);
+          document.title = 'MENU=' + out.join(' | ');
+        }, 320);
+      } catch (error) {
+        out.push('ERR=' + error.name + ':' + error.message);
+        document.title = 'MENU=' + out.join(' | ');
+      }
+    }, 1200);
+  });
+})();
+</script>
+</body>
+</html>
