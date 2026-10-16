@@ -104,7 +104,6 @@ ul { margin: 0; padding: 0; list-style: none; }
   border: 1px solid transparent;
   transition: background-color .35s ease, border-color .35s ease, box-shadow .35s ease, backdrop-filter .35s ease;
 }
-.masthead .btn { min-height: 40px; padding: 9px 20px; }
 .masthead.is-stuck .masthead-inner {
   background: var(--glass);
   border-color: var(--glass-line);
@@ -125,19 +124,10 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 .nav-actions { margin-inline-start: auto; display: flex; align-items: center; gap: 8px; }
 
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  min-height: 44px; padding: 11px 22px; border: 0; border-radius: var(--pill);
-  font: inherit; font-size: var(--t-lead); font-weight: 600; cursor: pointer;
-  transition: transform .22s cubic-bezier(.16, 1, .3, 1), box-shadow .22s ease, background-color .22s ease;
-}
-.btn-solid { background: var(--ink); color: var(--canvas); }
-.btn-solid:hover { transform: translateY(-2px); box-shadow: 0 16px 30px -14px rgba(20, 16, 23, .6); } /* taste-skill-ignore 只在 hover 时出现的抬起阴影 */
-.btn-quiet { background: rgba(20, 16, 23, .05); color: var(--ink); }
-.btn-quiet:hover { background: rgba(20, 16, 23, .09); transform: translateY(-2px); }
-.btn .arrow { transition: transform .22s cubic-bezier(.16, 1, .3, 1); }
-.btn:hover .arrow { transform: translateX(4px); }
-.btn-lg { min-height: 54px; padding: 14px 30px; font-size: var(--t-body); }
+/* 按钮已全站统一为下面的玻璃按钮，旧的 .btn/.btn-solid/.btn-quiet 样式已删除；
+   只把箭头动效迁到新结构上，否则「开始使用 / 创建令牌」的箭头 hover 就不动了 */
+.fancy-label .arrow { transition: transform .22s cubic-bezier(.16, 1, .3, 1); vertical-align: middle; }
+.fancy-btn:hover .fancy-label .arrow { transform: translateX(4px); }
 
 /* ========== 玻璃拟态按钮 ==========
    改编自 Uiverse 组件 "odd-ladybug-31" by FColombati
@@ -157,27 +147,59 @@ ul { margin: 0; padding: 0; list-style: none; }
   border-radius: var(--pill);
   --hover-time: 400ms;
   --hover-ease: cubic-bezier(0.25, 1, 0.5, 1);
+  --cut: 1.3em;            /* 投影外扩量：原组件是 2em，纯白底上会糊出上下两道灰印 */
+  --sh: .12;               /* 投影浓度，按场景调：顶栏要几乎看不见 */
+  --pad-y: 0.875em;
+  --pad-x: 1.5em;
 }
+/* 顶栏用的小一档：投影基本收掉，否则两颗按钮外面会圈一圈灰晕 */
+.fancy-wrap-sm { --cut: 0.55em; --sh: .05; --pad-y: 0.5em; --pad-x: 1.1em; font-size: var(--t-body); }
 .fancy-shadow {
-  --cut: 2em;
   position: absolute;
   width: calc(100% + var(--cut)); height: calc(100% + var(--cut));
   top: calc(0% - var(--cut) / 2); left: calc(0% - var(--cut) / 2);
-  filter: blur(clamp(2px, 0.125em, 12px)); /* taste-skill-ignore 这颗 Uiverse 玻璃按钮的柔和投影，是它形态的一部分 */
+  filter: blur(clamp(2px, 0.055em, 6px)); /* taste-skill-ignore 这颗 Uiverse 玻璃按钮的柔和投影，是它形态的一部分 */
   pointer-events: none;
 }
 .fancy-shadow::after {
   content: ''; position: absolute; z-index: 0; inset: 0;
   border-radius: var(--pill);
-  background: linear-gradient(180deg, rgba(0, 0, 0, .2), rgba(0, 0, 0, .1)); /* taste-skill-ignore 同上，投影本体 */
+  /* 原组件这里是最黑 .2 且离得很开，白底上就是上下两道黑；改成贴着按钮的浅投影，
+     静息态就接近原来「悬停时」的样子（用户反馈：悬停好看，静息难看） */
+  background: linear-gradient(180deg, rgba(20, 16, 23, var(--sh)), rgba(20, 16, 23, calc(var(--sh) / 4))); /* taste-skill-ignore 同上，投影本体 */
   width: calc(100% - var(--cut) - 0.25em);
   height: calc(100% - var(--cut) - 0.25em);
-  top: calc(var(--cut) - 0.5em);
+  top: calc(var(--cut) - 0.7em);
   left: calc(var(--cut) - 0.875em);
   padding: 0.125em; box-sizing: border-box;
   mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); /* taste-skill-ignore 同上，用 mask 掏出环形投影 */
   mask-composite: exclude;
   transition: all var(--hover-time) var(--hover-ease);
+}
+/* 实心变体：同一套玻璃材质与交互，但填主色 —— 全部按钮统一成这种之后，
+   主次层级靠它保留（否则整页按钮一个样，CTA 就没有落点了）。
+   注意必须写复合选择器：变体若与 .fancy-btn 同特异性又排在前面，会被基类覆盖，
+   结果就是「白字落在白玻璃上」的隐形按钮。 */
+.fancy-btn.fancy-btn-solid {
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .22), rgba(255, 255, 255, .08)), var(--ink); /* taste-skill-ignore 同上：主按钮的玻璃高光层 */
+}
+/* 深色按钮上的扫光要收窄：screen 混合在深底上会被放大成一道白糊 */
+.fancy-btn.fancy-btn-solid .fancy-label::after {
+  background: linear-gradient(var(--angle-2), rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, .18) 44% 48%, rgba(255, 255, 255, 0) 52%); /* taste-skill-ignore 同上：主按钮的扫光，压窄压低 */
+}
+/* 基类那几道白色内高光是给浅玻璃用的，落在深色按钮上就是一条白腰带，这里单独换掉 */
+.fancy-btn.fancy-btn-solid {
+  box-shadow: inset 0 0.1em 0.1em rgba(0, 0, 0, .16), inset 0 -0.1em 0.1em rgba(255, 255, 255, .12), 0 0.25em 0.125em -0.125em rgba(0, 0, 0, .28); /* taste-skill-ignore 同上：深色玻璃的厚度 */
+}
+.fancy-btn-solid .fancy-label { color: var(--canvas); }
+.fancy-btn-solid::after { --angle-1: 40deg; }
+/* 深色带上的玻璃按钮：同一套材质，文字转白、投影换成微弱白光 */
+.fancy-wrap-on-dark .fancy-btn {
+  background: linear-gradient(-75deg, rgba(255, 255, 255, .1), rgba(255, 255, 255, .28), rgba(255, 255, 255, .1)); /* taste-skill-ignore 同上：深底上的玻璃高光层 */
+}
+.fancy-wrap-on-dark .fancy-label { color: var(--canvas); }
+.fancy-wrap-on-dark .fancy-shadow::after {
+  background: linear-gradient(180deg, rgba(255, 255, 255, .18), rgba(255, 255, 255, .02)); /* taste-skill-ignore 同上：深底上的投影改用微光 */
 }
 .fancy-btn {
   all: unset;
@@ -201,7 +223,7 @@ ul { margin: 0; padding: 0; list-style: none; }
   font-size: inherit; font-weight: 500; letter-spacing: -.02em;
   color: var(--ink);
   transition: all var(--hover-time) var(--hover-ease);
-  padding-inline: 1.5em; padding-block: 0.875em;
+  padding-inline: var(--pad-x); padding-block: var(--pad-y);
   white-space: nowrap;
 }
 /* 原组件的浮雕字效（text-shadow）已去掉：浅色玻璃上它会伤文字可读性，legibility 优先 */
@@ -541,7 +563,8 @@ ul { margin: 0; padding: 0; list-style: none; }
 
 @media (prefers-reduced-motion: reduce) {
   .js [data-anim] { opacity: 1; translate: none; transition: none; }
-  .btn:hover { transform: none; }
+  .fancy-btn, .fancy-btn:hover { transform: none; }
+  .fancy-wrap { transition: none; }
   #petals { display: none; }
   .menu ul { transition: none; }
 }
@@ -593,8 +616,14 @@ ul { margin: 0; padding: 0; list-style: none; }
       </nav>
 
       <div class="nav-actions">
-        <button class="btn btn-quiet" type="button" data-demo="演示预览 · 登录流程未接入后端">登录</button>
-        <button class="btn btn-solid" type="button" data-demo="演示预览 · 注册流程未接入后端">注册</button>
+        <span class="fancy-wrap fancy-wrap-sm">
+          <button class="fancy-btn" type="button" data-demo="演示预览 · 登录流程未接入后端"><span class="fancy-label">登录</span></button>
+          <span class="fancy-shadow" aria-hidden="true"></span>
+        </span>
+        <span class="fancy-wrap fancy-wrap-sm">
+          <button class="fancy-btn fancy-btn-solid" type="button" data-demo="演示预览 · 注册流程未接入后端"><span class="fancy-label">注册</span></button>
+          <span class="fancy-shadow" aria-hidden="true"></span>
+        </span>
       </div>
 
       <details class="menu">
@@ -625,10 +654,14 @@ ul { margin: 0; padding: 0; list-style: none; }
         <h1 data-anim><span class="nb">一个接口，</span><span class="nb">接入所有大模型</span></h1>
         <p class="lede" data-anim>企业级 AI 模型统一接入与调度平台</p>
         <div class="hero-actions" data-anim>
-          <button class="btn btn-solid btn-lg" type="button" data-demo="演示预览 · 注册流程未接入后端">
-            开始使用
-            <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </button>
+          <span class="fancy-wrap">
+            <button class="fancy-btn fancy-btn-solid" type="button" data-demo="演示预览 · 注册流程未接入后端">
+              <span class="fancy-label">开始使用
+                <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              </span>
+            </button>
+            <span class="fancy-shadow" aria-hidden="true"></span>
+          </span>
           <span class="fancy-wrap">
             <a class="fancy-btn" href="#" data-demo="演示预览 · 定价页未接入后端"><span class="fancy-label">查看定价</span></a>
             <span class="fancy-shadow" aria-hidden="true"></span>
@@ -803,10 +836,14 @@ ul { margin: 0; padding: 0; list-style: none; }
       <span class="glow" aria-hidden="true"></span>
       <div class="cta-inner">
         <h2>先把一次调用跑通</h2>
-        <button class="btn btn-solid btn-lg" type="button" data-demo="演示预览 · 注册流程未接入后端">
-          创建令牌
-          <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
+        <span class="fancy-wrap fancy-wrap-on-dark">
+          <button class="fancy-btn" type="button" data-demo="演示预览 · 注册流程未接入后端">
+            <span class="fancy-label">创建令牌
+              <svg class="arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </button>
+          <span class="fancy-shadow" aria-hidden="true"></span>
+        </span>
       </div>
     </div>
   </section>
@@ -826,7 +863,7 @@ ul { margin: 0; padding: 0; list-style: none; }
       <a href="#" data-demo="演示预览 · 用户协议未接入后端">用户协议</a>
       <a href="#" data-demo="演示预览 · 隐私政策未接入后端">隐私政策</a>
       <a href="#" data-demo="演示预览 · 联系方式未接入后端">联系我们</a>
-      <span class="foot-stamp">预览版 2026-10-17 01:38</span>
+      <span class="foot-stamp">预览版 2026-10-17 01:45</span>
       <span>本站基于
         <a href="https://github.com/QuantumNous/new-api" target="_blank" rel="noopener noreferrer">New API</a>
         构建</span>
