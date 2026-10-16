@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><title>COVER=PENDING</title>
+<style>html,body{margin:0;padding:0}iframe{display:block;border:0}</style></head>
+<body>
+<!-- 查出指定宽度下、某个标题被谁遮住。用法：cover-probe.html?w=390&text=多渠道调度&src=... -->
+<iframe id="f" scrolling="no"></iframe>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  var w = Number(q.get('w') || 390);
+  var want = q.get('text') || '';
+  var f = document.getElementById('f');
+  f.style.width = w + 'px'; f.style.height = '900px';
+  f.src = q.get('src') || '';
+
+  f.addEventListener('load', function () {
+    setTimeout(function () {
+      var out = [];
+      try {
+        var win = f.contentWindow, doc = win.document;
+        var target = null;
+        var hs = doc.querySelectorAll('h1, h2, h3');
+        for (var i = 0; i < hs.length; i++) {
+          if (hs[i].textContent.trim().indexOf(want) >= 0) { target = hs[i]; break; }
+        }
+        if (!target) { document.title = 'COVER=找不到标题 ' + want; return; }
+        var tr = target.getBoundingClientRect();
+        out.push('标题 rect top=' + Math.round(tr.top) + ' bottom=' + Math.round(tr.bottom) +
+          ' left=' + Math.round(tr.left) + ' right=' + Math.round(tr.right));
+
+        // 找出与标题矩形重叠、且 paint 在其之上的元素
+        var all = doc.querySelectorAll('body *');
+        var hits = [];
+        for (var j = 0; j < all.length; j++) {
+          var el = all[j];
+          if (el === target || el.contains(target) || target.contains(el)) continue;
+          var r = el.getBoundingClientRect();
+          if (r.width < 4 || r.height < 4) continue;
+          var ov = Math.min(r.bottom, tr.bottom) - Math.max(r.top, tr.top);
+          var ox = Math.min(r.right, tr.right) - Math.max(r.left, tr.left);
+          if (ov <= 2 || ox <= 2) continue;
+          var cs = win.getComputedStyle(el);
+          if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) < 0.05) continue;
+          var covered = 0;
+          // 取标题矩形中点与四分之一处采样，看该点最上层元素是不是它
+          var pts = [[tr.left + ox / 2, tr.top + ov / 2]];
+          for (var k = 0; k < pts.length; k++) {
+            var top = doc.elementFromPoint(pts[k][0], pts[k][1]);
+            if (top && (top === el || el.contains(top))) covered++;
+          }
+          if (!covered) continue;
+          var cls = (el.getAttribute('class') || '').split(' ').slice(0, 2).join('.');
+          hits.push(el.tagName.toLowerCase() + (cls ? '.' + cls : '') +
+            '[z=' + cs.zIndex + ',pos=' + cs.position + ',ov=' + Math.round(ov) + ']');
+        }
+        out.push('遮挡者: ' + (hits.length ? hits.slice(0, 6).join(' , ') : '无（可能是滚动位置导致）'));
+      } catch (e) { out.push('ERR=' + e.name + ':' + e.message); }
+      document.title = 'COVER=' + out.join(' | ');
+    }, 1500);
+  });
+})();
+</script>
+</body></html>
