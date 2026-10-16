@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>MEDIA=PENDING</title>
+<style>html,body{margin:0;font:14px/1.6 system-ui;padding:12px}</style>
+</head>
+<body>
+<!-- 报表：当前环境实际命中的媒体查询分支。用法：media-report.html -->
+<pre id="out">探测中…</pre>
+<script>
+(function () {
+  'use strict';
+  var tests = [
+    ['(hover: hover) and (pointer: fine)', '鼠标悬停 + 精细指针（我们原来用的门槛）'],
+    ['(any-hover: hover)', '任一输入可悬停（更宽松的门槛）'],
+    ['(hover: none)', '主输入无法悬停'],
+    ['(pointer: coarse)', '主指针是粗的（触摸）'],
+    ['(any-pointer: fine)', '存在精细指针（有鼠标）'],
+    ['(any-pointer: coarse)', '存在粗指针（有触摸屏）'],
+    ['(prefers-reduced-motion: reduce)', '系统要求减少动态效果'],
+    ['(max-width: 760px)', '窄屏（手机版式）'],
+  ];
+  var lines = [];
+  lines.push('视口=' + window.innerWidth + 'x' + window.innerHeight +
+    ' DPR=' + (window.devicePixelRatio || 1));
+  lines.push('navigator.maxTouchPoints=' + (navigator.maxTouchPoints || 0));
+  lines.push('');
+  for (var i = 0; i < tests.length; i++) {
+    var q = tests[i][0];
+    var m = window.matchMedia(q).matches;
+    lines.push((m ? '命中  ' : '不命中') + '  ' + q + '   ← ' + tests[i][1]);
+  }
+  // 菜单的开合门槛与卡片悬停门槛分别是什么
+  lines.push('');
+  lines.push('卡片悬停分支=' + (window.matchMedia('(hover: hover) and (pointer: fine)').matches ? '启用' : '未启用'));
+  lines.push('菜单显示分支=' + (window.matchMedia('(max-width: 760px)').matches ? '手机版(显示菜单)' : '桌面版(显示导航)'));
+
+  document.getElementById('out').textContent = lines.join('\n');
+  document.title = 'MEDIA=' + lines.join(' | ').replace(/\s+/g, ' ');
+})();
+</script>
+</body>
+</html>

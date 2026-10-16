@@ -10,6 +10,7 @@
     "audit": "node scripts/audit-mobile.mjs",
     "sendable": "node scripts/build-sendable.mjs",
     "phys": "node scripts/phys-verify.mjs",
+    "hover": "node scripts/hover-verify.mjs",
     "fetch:logos": "node scripts/fetch-logos.mjs",
     "build:logos": "node scripts/build-logos.mjs",
     "fetch:land": "node scripts/fetch-land.mjs"
